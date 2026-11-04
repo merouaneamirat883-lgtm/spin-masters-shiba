@@ -3,18 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coins Master - Shiba</title>
+    <title>Spin Masters - Shiba</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
 
-        * {
-            box-sizing: border-box;
-            user-select: none;
-        }
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
 
         body {
-            margin: 0;
-            padding: 0;
             height: 100vh;
             font-family: 'Cairo', sans-serif;
             background-image: url('bg.png');
@@ -22,312 +17,443 @@
             background-position: center;
             display: flex;
             flex-direction: column;
-            align-items: center;
             overflow: hidden;
+            position: relative;
         }
 
-        /* شريط الإحصائيات العلوي */
+        /* الشريط العلوي (مستوى، عملات) */
         .top-bar {
-            width: 90%;
+            width: 100%;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 215, 0, 0.5);
-            backdrop-filter: blur(5px);
+            align-items: flex-start;
+            z-index: 10;
         }
 
-        .stat-item {
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px 15px 5px 5px;
+            border-radius: 30px;
+            border: 2px solid #FFD700;
+        }
+
+        .avatar {
+            width: 40px; height: 40px;
+            background: #8e44ad;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px;
+        }
+
+        .level-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .level-text { color: white; font-size: 12px; font-weight: bold; }
+        .progress-bg {
+            width: 80px; height: 8px;
+            background: #333; border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            width: 60%; height: 100%;
+            background: #2ed573;
+        }
+
+        .currency {
             display: flex;
             align-items: center;
             gap: 5px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .stat-item img {
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-            border-radius: 50%;
-        }
-
-        .stat-value {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px 15px;
+            border-radius: 30px;
+            border: 2px solid #FFD700;
             color: #FFD700;
+            font-weight: 900;
+            font-size: 18px;
         }
 
-        /* منطقة العجلة */
-        .wheel-container {
-            position: relative;
-            margin-top: 50px;
+        .currency img { width: 25px; height: 25px; }
+
+        /* منطقة الماكينة */
+        .game-area {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
-        .pointer {
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 30px solid #ff4757;
-            position: absolute;
-            top: -25px;
-            z-index: 10;
-            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.5));
-        }
-
-        .wheel {
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            border: 8px solid #FFD700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), inset 0 0 20px rgba(0,0,0,0.5);
-            /* تصميم العجلة باستخدام الألوان */
-            background: conic-gradient(
-                #ff4757 0deg 45deg, 
-                #FFD700 45deg 90deg, 
-                #2ed573 90deg 135deg, 
-                #3742fa 135deg 180deg,
-                #ff4757 180deg 225deg, 
-                #FFD700 225deg 270deg, 
-                #2ed573 270deg 315deg, 
-                #3742fa 315deg 360deg
-            );
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1);
+        .machine-frame {
+            background: linear-gradient(180deg, #4a4a4a, #1a1a1a);
+            padding: 15px;
+            border-radius: 20px;
+            border: 4px solid #FFD700;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(255, 215, 0, 0.4);
             position: relative;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            gap: 5px;
         }
 
-        /* مركز العجلة */
-        .wheel-center {
-            width: 60px;
-            height: 60px;
-            background-color: #2f3542;
-            border-radius: 50%;
-            border: 4px solid #FFD700;
-            z-index: 5;
+        /* الشاشة الزجاجية للماكينة */
+        .reels-container {
+            background: #fff;
+            border-radius: 10px;
+            padding: 5px;
             display: flex;
-            justify-content: center;
+            gap: 5px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .reel {
+            width: 80px; height: 240px;
+            background: #f1f2f6;
+            overflow: hidden;
+            position: relative;
+            border-radius: 5px;
+        }
+
+        .reel-strip {
+            display: flex;
+            flex-direction: column;
+            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+
+        .reel-strip img {
+            width: 80px; height: 80px;
+            object-fit: contain;
+            padding: 10px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .win-line {
+            position: absolute;
+            top: 50%;
+            left: 0; width: 100%;
+            height: 4px;
+            background: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 10px red;
+            transform: translateY(-50%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* زر اللعب واللفات */
+        .bottom-controls {
+            position: absolute;
+            bottom: 80px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            gap: 10px;
+            width: 100%;
         }
 
-        .wheel-center img {
-            width: 40px;
-            height: 40px;
+        .spins-counter {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            border: 2px solid #fff;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
+        
+        .spins-counter span { color: #2ed573; font-size: 22px; }
 
-        /* زر اللعب */
         .spin-btn {
-            margin-top: 40px;
-            background: linear-gradient(to bottom, #2ed573, #1e90ff);
+            background: linear-gradient(180deg, #2ed573, #1e90ff);
             color: white;
             border: 3px solid #fff;
-            padding: 15px 50px;
-            font-size: 24px;
+            padding: 10px 60px;
+            font-size: 28px;
             font-family: 'Cairo', sans-serif;
             font-weight: 900;
-            border-radius: 30px;
+            border-radius: 40px;
             cursor: pointer;
-            box-shadow: 0 6px 0 #2f3542, 0 10px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 0 #2f3542, 0 15px 20px rgba(0,0,0,0.6);
             transition: all 0.1s;
-            outline: none;
+            text-transform: uppercase;
         }
 
-        .spin-btn:active {
-            transform: translateY(6px);
-            box-shadow: 0 0 0 #2f3542, 0 5px 10px rgba(0,0,0,0.5);
+        .spin-btn:active:not(:disabled) {
+            transform: translateY(8px);
+            box-shadow: 0 0 0 #2f3542, 0 5px 10px rgba(0,0,0,0.6);
         }
 
         .spin-btn:disabled {
             background: #747d8c;
-            cursor: not-allowed;
-            transform: translateY(6px);
-            box-shadow: 0 0 0 #2f3542;
+            box-shadow: 0 8px 0 #2f3542;
         }
 
-        /* رسالة الفوز */
+        /* القائمة السفلية */
+        .bottom-nav {
+            height: 70px;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 2px solid #FFD700;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+        }
+
+        .nav-item {
+            color: #aaa;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+        }
+        .nav-item.active { color: #FFD700; }
+        .nav-item .icon { font-size: 24px; }
+
+        /* نافذة الفوز */
         .win-modal {
             position: fixed;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            background: rgba(0, 0, 0, 0.85);
+            background: radial-gradient(circle, #2b2b2b, #000);
             padding: 30px;
             border-radius: 20px;
-            border: 2px solid #FFD700;
+            border: 3px solid #FFD700;
             text-align: center;
             color: white;
             z-index: 100;
             transition: transform 0.3s;
-            box-shadow: 0 0 30px #FFD700;
+            box-shadow: 0 0 50px #FFD700;
+            width: 80%;
         }
 
-        .win-modal.show {
-            transform: translate(-50%, -50%) scale(1);
+        .win-modal.show { transform: translate(-50%, -50%) scale(1); }
+        .win-modal h2 { margin-bottom: 10px; color: #FFD700; text-shadow: 0 0 10px #FFD700; }
+        .win-modal img { width: 80px; height: 80px; margin: 10px; animation: bounce 1s infinite alternate;}
+        .win-modal p { font-size: 22px; font-weight: bold; }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
         }
 
-        .win-modal h2 {
-            margin: 0 0 10px 0;
-            color: #FFD700;
+        /* زر إعادة تعبئة اللفات (للتجربة فقط) */
+        .reload-btn {
+            margin-top: 10px;
+            background: transparent;
+            color: #aaa;
+            border: 1px solid #aaa;
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            cursor: pointer;
         }
-        
-        .win-modal img {
-            width: 80px;
-            height: 80px;
-            margin: 10px;
-        }
-        
-        .win-modal p {
-            font-size: 20px;
-            margin: 0;
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- شريط الإحصائيات -->
+    <!-- الشريط العلوي -->
     <div class="top-bar">
-        <div class="stat-item">
-            <img src="coin.png" alt="عملة">
-            <span class="stat-value" id="coins">0</span>
-        </div>
-        <div class="stat-item">
-            <img src="diamond.png" alt="ماسة">
-            <span class="stat-value" id="diamonds">0</span>
-        </div>
-        <div class="stat-item">
-            <img src="shield.png" alt="درع">
-            <span class="stat-value" id="shields">0</span>
-        </div>
-    </div>
-
-    <!-- العجلة -->
-    <div class="wheel-container">
-        <div class="pointer"></div>
-        <div class="wheel" id="wheel">
-            <div class="wheel-center">
-                <img src="coin.png" alt="Center">
+        <div class="player-info">
+            <div class="avatar">🐕</div>
+            <div class="level-bar">
+                <div class="level-text">المستوى 1</div>
+                <div class="progress-bg"><div class="progress-fill"></div></div>
             </div>
         </div>
+        <div class="currency">
+            <img src="coin.png" alt="coin">
+            <span id="ui-coins">0</span>
+        </div>
     </div>
 
-    <!-- زر اللعب -->
-    <button class="spin-btn" id="spinBtn">ابدأ اللعب</button>
+    <!-- منطقة اللعب -->
+    <div class="game-area">
+        <div class="machine-frame">
+            <div class="reels-container">
+                <div class="reel"><div class="reel-strip" id="reel1"></div></div>
+                <div class="reel"><div class="reel-strip" id="reel2"></div></div>
+                <div class="reel"><div class="reel-strip" id="reel3"></div></div>
+                <div class="win-line"></div>
+            </div>
+        </div>
+
+        <div class="bottom-controls">
+            <div class="spins-counter">اللفات: <span id="ui-spins">10</span></div>
+            <button class="spin-btn" id="spinBtn">SPIN</button>
+            <button class="reload-btn" onclick="location.reload()">(للتجربة) إعادة تعبئة اللفات</button>
+        </div>
+    </div>
+
+    <!-- القائمة السفلية -->
+    <div class="bottom-nav">
+        <div class="nav-item"><span class="icon">🏠</span> القرية</div>
+        <div class="nav-item active"><span class="icon">🎰</span> الماكينة</div>
+        <div class="nav-item"><span class="icon">🃏</span> البطاقات</div>
+    </div>
 
     <!-- نافذة الفوز -->
     <div class="win-modal" id="winModal">
-        <h2>مبروك!</h2>
-        <img id="rewardImg" src="coin.png" alt="Reward">
-        <p>لقد ربحت <span id="rewardAmount">50</span></p>
+        <h2 id="winTitle">مبروك!</h2>
+        <img id="winImg" src="coin.png" alt="Reward">
+        <p>ربحت <span id="winAmount">0</span></p>
     </div>
 
     <script>
-        // المتغيرات الأساسية
-        let coins = 0;
-        let diamonds = 0;
-        let shields = 0;
-        let isSpinning = false;
-        let currentRotation = 0;
+        // --- إعدادات اللعبة ---
+        const symbols = ['coin.png', 'diamond.png', 'shield.png'];
+        let state = {
+            coins: 500,
+            spins: 10,
+            isSpinning: false
+        };
 
-        const wheel = document.getElementById('wheel');
+        // عناصر الواجهة
+        const uiCoins = document.getElementById('ui-coins');
+        const uiSpins = document.getElementById('ui-spins');
         const spinBtn = document.getElementById('spinBtn');
         const winModal = document.getElementById('winModal');
 
-        // الأصوات (يمكنك إضافة رابط صوت هنا إذا أردت)
-        // const spinSound = new Audio('spin.mp3');
-        // const winSound = new Audio('win.mp3');
-
-        spinBtn.addEventListener('click', spinWheel);
-
-        function spinWheel() {
-            if (isSpinning) return;
-            isSpinning = true;
-            spinBtn.disabled = true;
-            spinBtn.innerText = "جاري الدوران...";
-            winModal.classList.remove('show');
-
-            // تحديد زاوية عشوائية (على الأقل 5 دورات كاملة + زاوية عشوائية)
-            const spins = 5; 
-            const randomDegrees = Math.floor(Math.random() * 360);
-            const totalRotation = (spins * 360) + randomDegrees;
-            
-            // إضافة الزاوية الجديدة للزاوية الحالية
-            currentRotation += totalRotation;
-            
-            // تحريك العجلة
-            wheel.style.transform = `rotate(${currentRotation}deg)`;
-
-            // بعد انتهاء الدوران (4 ثواني)
-            setTimeout(() => {
-                isSpinning = false;
-                spinBtn.disabled = false;
-                spinBtn.innerText = "ابدأ اللعب";
-                
-                // تحديد الجائزة بناءً على مكان التوقف (محاكاة)
-                calculateReward(randomDegrees);
-
-            }, 4000);
+        // تحديث الواجهة
+        function updateUI() {
+            uiCoins.innerText = state.coins;
+            uiSpins.innerText = state.spins;
+            spinBtn.disabled = state.spins <= 0 || state.isSpinning;
         }
 
-        function calculateReward(degree) {
-            // نقسم العجلة إلى 8 أقسام (كل قسم 45 درجة)
-            // نستخدم باقي القسمة لنعرف أين توقفت
-            const sector = Math.floor(degree / 45); 
-            let rewardType = "";
-            let rewardAmount = 0;
-            let imgSrc = "";
+        // ملء البكرات بالصور
+        function populateReels() {
+            for (let i = 1; i <= 3; i++) {
+                const reel = document.getElementById(`reel${i}`);
+                let html = '';
+                // نضع 20 صورة عشوائية في كل بكرة
+                for (let j = 0; j < 20; j++) {
+                    const randSym = symbols[Math.floor(Math.random() * symbols.length)];
+                    html += `<img src="${randSym}">`;
+                }
+                reel.innerHTML = html;
+            }
+        }
 
-            // توزيع الجوائز (تخيل أن القطاعات مختلفة)
-            if (sector === 0 || sector === 4) {
-                rewardType = "عملات";
-                rewardAmount = Math.floor(Math.random() * 50) + 10; // من 10 إلى 60
-                coins += rewardAmount;
-                document.getElementById('coins').innerText = coins;
-                imgSrc = "coin.png";
-            } else if (sector === 1 || sector === 5) {
-                rewardType = "جواهر";
-                rewardAmount = Math.floor(Math.random() * 5) + 1; // من 1 إلى 5
-                diamonds += rewardAmount;
-                document.getElementById('diamonds').innerText = diamonds;
-                imgSrc = "diamond.png";
-            } else if (sector === 2 || sector === 6) {
-                rewardType = "دروع";
-                rewardAmount = Math.floor(Math.random() * 3) + 1; // من 1 إلى 3
-                shields += rewardAmount;
-                document.getElementById('shields').innerText = shields;
-                imgSrc = "shield.png";
-            } else {
-                // قطاع الحظ السيئ أو جائزة كبيرة
-                rewardType = "عملات";
-                rewardAmount = 100; // جائزة كبرى
-                coins += rewardAmount;
-                document.getElementById('coins').innerText = coins;
-                imgSrc = "coin.png";
+        // دالة اللف
+        function spin() {
+            if (state.isSpinning || state.spins <= 0) return;
+
+            state.isSpinning = true;
+            state.spins--;
+            updateUI();
+            winModal.classList.remove('show');
+            populateReels();
+
+            const imageHeight = 80; // ارتفاع الصورة في CSS
+
+            // دالة تحريك بكرة معينة
+            function animateReel(id, duration, targetIndex) {
+                const reel = document.getElementById(id);
+                reel.style.transition = 'none';
+                reel.style.transform = 'translateY(0px)';
+                void reel.offsetWidth; // Trigger reflow
+
+                // المسافة: 15 صورة للأسفل + موقع الصورة النهائية
+                const moveDistance = (imageHeight * 15) + (targetIndex * imageHeight);
+                reel.style.transition = `transform ${duration}s cubic-bezier(0.1, 0.7, 0.1, 1)`;
+                reel.style.transform = `translateY(-${moveDistance}px)`;
             }
 
-            showWinModal(rewardType, rewardAmount, imgSrc);
+            // تحديد النتائج (عشوائية)
+            const res1 = Math.floor(Math.random() * 3);
+            const res2 = Math.floor(Math.random() * 3);
+            const res3 = Math.floor(Math.random() * 3);
+
+            // تحريك البكرات بأوقات مختلفة
+            animateReel('reel1', 2.5, res1);
+            animateReel('reel2', 3.0, res2);
+            animateReel('reel3', 3.5, res3);
+
+            // بعد انتهاء الحركة
+            setTimeout(() => {
+                state.isSpinning = false;
+                updateUI();
+                checkWin(res1, res2, res3);
+            }, 3800);
         }
 
-        function showWinModal(type, amount, img) {
-            document.getElementById('rewardAmount').innerText = amount + " " + type;
-            document.getElementById('rewardImg').src = img;
+        // حساب الجوائز
+        function checkWin(r1, r2, r3) {
+            let wonType = '';
+            let amount = 0;
+            let img = '';
+
+            // إذا تطابقت الثلاثة (Jackpot)
+            if (r1 === r2 && r2 === r3) {
+                if (r1 === 0) { // Coin
+                    amount = 150;
+                    state.coins += amount;
+                    img = 'coin.png';
+                    wonType = 'عملات';
+                } else if (r1 === 1) { // Diamond
+                    amount = 50;
+                    state.coins += amount; // نحوّل الجوهرة لعملات للتبسيط
+                    img = 'diamond.png';
+                    wonType = 'جواهر (تحولت لعملات)';
+                } else { // Shield
+                    amount = 30;
+                    state.coins += amount;
+                    img = 'shield.png';
+                    wonType = 'دروع (تحولت لعملات)';
+                }
+                showModal(amount, img, "JACKPOT! 🎉");
+            } 
+            // إذا تطابق اثنان (فوز صغير)
+            else if (r1 === r2 || r2 === r3 || r1 === r3) {
+                amount = 20;
+                state.coins += amount;
+                img = 'coin.png';
+                showModal(amount, img, "فوز صغير!");
+            } 
+            // خسارة
+            else {
+                amount = 5; // تعويض بسيط
+                state.coins += amount;
+                img = 'coin.png';
+                showModal(amount, img, "حظ أوفر!");
+            }
+            
+            updateUI();
+        }
+
+        function showModal(amount, img, title) {
+            document.getElementById('winTitle').innerText = title;
+            document.getElementById('winAmount').innerText = amount;
+            document.getElementById('winImg').src = img;
             winModal.classList.add('show');
 
-            // إخفاء الرسالة بعد 3 ثواني
             setTimeout(() => {
                 winModal.classList.remove('show');
-            }, 3000);
+            }, 2500);
         }
 
-        // تهيئة تليجرام (إذا كنت تفتحها من داخل تليجرام)
+        // بدء اللعبة
+        populateReels();
+        updateUI();
+        spinBtn.addEventListener('click', spin);
+
+        // ربط تليجرام
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
