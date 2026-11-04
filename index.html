@@ -1,415 +1,503 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coins Master - Shiba 3D</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#10172f">
+<title>MASTER SPINE SHIBA</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
 
-        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
-
-        body {
-            height: 100vh;
-            font-family: 'Cairo', sans-serif;
-            background-image: url('bg.png');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* تأثير اهتزاز الشاشة */
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-        .shake { animation: shake 0.5s; animation-iteration-count: 1; }
-
-        #coin-canvas {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; z-index: 999;
-        }
-
-        /* الشريط العلوي الفاخر */
-        .top-bar {
-            width: 100%; padding: 15px;
-            display: flex; justify-content: space-between;
-            z-index: 10;
-        }
-
-        .ui-box {
-            background: linear-gradient(180deg, #2b2b2b, #000);
-            border: 3px solid #d4af37; /* لون ذهبي معدني */
-            border-radius: 25px;
-            padding: 5px 15px;
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,215,0,0.5);
-        }
-
-        .ui-box img { width: 35px; height: 35px; filter: drop-shadow(0 2px 3px #000); }
-        .ui-text { color: #FFD700; font-weight: 900; font-size: 22px; text-shadow: 0 2px 2px #000; }
-
-        /* منطقة اللعب */
-        .game-area {
-            flex: 1; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            position: relative; z-index: 5; margin-top: -20px;
-        }
-
-        /* إطار الماكينة المعدني */
-        .machine {
-            background: linear-gradient(135deg, #e6c27a 0%, #b8860b 50%, #e6c27a 100%);
-            padding: 15px;
-            border-radius: 20px;
-            box-shadow: 
-                0 20px 40px rgba(0,0,0,0.9), 
-                inset 0 0 15px rgba(255,255,255,0.6),
-                inset 0 0 10px rgba(0,0,0,0.5);
-            position: relative;
-            display: flex; gap: 5px;
-            border: 2px solid #fff;
-        }
-
-        /* الشاشة الزجاجية الداخلية */
-        .reels-display {
-            background: #111;
-            padding: 8px;
-            border-radius: 12px;
-            display: flex; gap: 8px;
-            box-shadow: inset 0 10px 30px rgba(0,0,0,1), inset 0 -10px 30px rgba(0,0,0,1);
-            position: relative;
-            border: 3px solid #333;
-        }
-
-        /* تأثير انعكاس الزجاج */
-        .reels-display::after {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 40%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
-            border-radius: 10px 10px 0 0;
-            pointer-events: none;
-            z-index: 20;
-        }
-
-        .reel {
-            width: 80px; height: 240px;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-        }
-
-        .reel-strip {
-            display: flex; flex-direction: column;
-            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
-        }
-
-        .reel-strip img {
-            width: 80px; height: 80px;
-            object-fit: contain; padding: 10px;
-            background: #fff; border-bottom: 1px solid #ccc;
-        }
-
-        .win-line {
-            position: absolute; top: 50%; left: 0; width: 100%; height: 4px;
-            background: rgba(255, 0, 0, 0.8);
-            box-shadow: 0 0 15px red;
-            transform: translateY(-50%); z-index: 10;
-        }
-
-        /* الأزرار والعدادات */
-        .controls {
-            margin-top: 30px;
-            display: flex; flex-direction: column; align-items: center; gap: 15px;
-        }
-
-        /* عداد اللفات */
-        .spins-box {
-            background: rgba(0,0,0,0.8);
-            border: 2px solid #FFD700;
-            border-radius: 20px;
-            padding: 5px 25px;
-            color: white; font-weight: bold; font-size: 18px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
-        }
-        .spins-box span { color: #2ed573; font-size: 24px; text-shadow: 0 0 10px #2ed573; }
-
-        /* زر SPIN الفاخر */
-        .spin-btn {
-            background: linear-gradient(180deg, #2ed573 0%, #1e90ff 100%);
-            color: white;
-            border: 4px solid #fff;
-            padding: 15px 70px;
-            font-size: 32px;
-            font-family: 'Cairo', sans-serif; font-weight: 900;
-            border-radius: 50px; cursor: pointer;
-            box-shadow: 0 10px 0 #1a5c3a, 0 15px 25px rgba(0,0,0,0.8);
-            transition: all 0.1s;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* تأثير لمعان الزر */
-        .spin-btn::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: skewX(-20deg);
-            animation: shine 3s infinite;
-        }
-        @keyframes shine { 100% { left: 200%; } }
-
-        .spin-btn:active:not(:disabled) {
-            transform: translateY(10px);
-            box-shadow: 0 0 0 #1a5c3a, 0 5px 10px rgba(0,0,0,0.8);
-        }
-
-        .spin-btn:disabled { background: #555; box-shadow: 0 10px 0 #222; cursor: not-allowed; color: #888; }
-
-        /* نافذة الفوز */
-        .win-modal {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: radial-gradient(circle, #4a1c1c, #000);
-            padding: 40px 20px; border-radius: 30px;
-            border: 4px solid #FFD700; text-align: center; color: white; z-index: 1000;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 80px #FFD700; width: 85%;
-        }
-
-        .win-modal.show { transform: translate(-50%, -50%) scale(1); }
-        .win-modal h2 { font-size: 38px; color: #FFD700; margin-bottom: 15px; text-shadow: 0 0 20px #FFD700; }
-        .win-modal img { width: 120px; height: 120px; margin: 10px; animation: bounce 0.8s infinite alternate; }
-        .win-modal p { font-size: 26px; font-weight: bold; }
-
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
-
-        .reload-btn {
-            margin-top: 15px; background: transparent; color: #fff;
-            border: 1px solid rgba(255,255,255,0.5); padding: 5px 15px;
-            border-radius: 10px; font-size: 12px; cursor: pointer;
-        }
-    </style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 25%,#315c91,#10172f 72%);color:white;font-family:Cairo,Arial;padding-bottom:85px}
+button{font-family:inherit;cursor:pointer;color:inherit}
+.app{max-width:520px;margin:auto;min-height:100vh}
+.top{display:flex;align-items:center;justify-content:space-between;padding:14px 12px}
+.brand{color:#ffdc66;font-weight:900;font-size:14px}
+.avatar{font-size:29px;border:3px solid #ffdb63;border-radius:50%;padding:3px;background:#734b32}
+.balances{display:flex;gap:6px}
+.bal{background:#0a1024;border:1px solid #b18b3b;border-radius:18px;padding:5px 9px;font-size:13px;font-weight:900}
+.bal b{color:#ffdc66}
+.hero{text-align:center;padding:6px}
+.hero h1{font-size:25px;margin:0;text-shadow:0 3px #743a12}
+.hero p{font-size:12px;color:#d1dcf3;margin:2px}
+.level{margin:10px 15px;background:#101a34;border:1px solid #4b9d9b;border-radius:15px;padding:9px 12px;font-size:12px}
+.bar{height:8px;background:#35415f;border-radius:10px;margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;width:38%;background:linear-gradient(90deg,#22d9ba,#caff6a)}
+.machine{margin:0 12px;padding:12px 9px 13px;border-radius:24px;background:linear-gradient(140deg,#fff0a3,#c47c18 35%,#754018 60%,#ffda60);border:3px solid #fff1b8;box-shadow:0 14px 28px #0009,inset 0 0 0 3px #99591b;perspective:900px}
+.head{margin:0 auto 10px;width:80%;text-align:center;background:linear-gradient(#293c5d,#10192b);border:2px solid #ffe07b;border-radius:14px;padding:5px;color:#ffe47b;font-weight:900}
+.reels{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:8px;background:#08111f;border:2px solid #8cf9d5;border-radius:15px;box-shadow:inset 0 0 20px #000}
+.reel{height:clamp(130px,36vw,175px);position:relative;overflow:hidden;border-radius:9px;background:linear-gradient(90deg,#bdc7d5,#fff 20%,#f5f6fa 80%,#b4bfce);box-shadow:inset 0 0 15px #25364c}
+.strip{position:absolute;inset:0;display:flex;flex-direction:column;will-change:transform}
+.symbol{height:100%;min-height:100%;display:grid;place-items:center;font-size:clamp(48px,14vw,72px);text-shadow:0 4px 3px #0003}
+.reel:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#25334d55,transparent 25%,transparent 75%,#25334d55)}
+.line{position:absolute;top:50%;left:0;right:0;border-top:2px solid #ff4d66;z-index:2;box-shadow:0 0 9px #ff4d66}
+.foot{display:flex;justify-content:space-between;padding:8px 4px 0;font-size:12px;font-weight:900}
+.energy{background:#101a32;border:1px solid #7debd0;border-radius:18px;padding:3px 10px}
+.controls{text-align:center;padding:17px 8px}
+.spin{width:168px;height:168px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fff39a,#ffc52b 48%,#df7412 82%);border:8px solid #fff1b4;outline:6px solid #26335c;box-shadow:0 9px 0 #713c13,0 15px 25px #000b,inset 0 0 0 4px #fff8;color:white;font:900 36px Cairo;text-shadow:0 3px #a34a0b}
+.spin small{display:block;font-size:11px;color:#9b470d;text-shadow:none}
+.spin:disabled{filter:grayscale(1);opacity:.6}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 14px}
+.quick button{background:linear-gradient(145deg,#293c69,#172341);border:1px solid #6b83b6;border-radius:14px;padding:10px 4px;font-weight:900;font-size:12px}
+.quick span{display:block;font-size:23px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 5px;background:#0b1228f5;border-top:1px solid #44577e;z-index:5}
+.nav button{background:none;color:#a8b6d8;font:900 10px Cairo}
+.nav button span{display:block;font-size:22px}
+.nav button.active{color:#ffdc67}
+.panel{display:none;padding:15px;min-height:75vh}
+.panel.active{display:block}
+.panel h2{text-align:center;color:#ffdc66}
+.card{background:linear-gradient(145deg,#26385f,#151f3b);border:1px solid #627ba9;border-radius:17px;padding:15px;margin:10px 0}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff20;gap:5px}
+.action{background:linear-gradient(#a3ff70,#42c94d);color:#12351b;border-radius:11px;padding:8px 14px;font:900 13px Cairo}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{text-align:center;background:#0e1831;border-radius:12px;padding:12px}
+.stat b{display:block;color:#ffdc66;font-size:19px}
+.muted{color:#aebcda;font-size:12px}
+.toast{position:fixed;z-index:10;top:15%;left:50%;transform:translate(-50%,-15px);opacity:0;transition:.25s;background:#14213e;border:2px solid #ffdc66;border-radius:15px;padding:13px 20px;text-align:center;width:85%;max-width:350px;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast b{display:block;color:#ffdc66;font-size:22px}
+.conf{position:fixed;top:-30px;z-index:9;animation:drop 2s linear forwards;pointer-events:none}
+@keyframes drop{to{transform:translateY(110vh) rotate(500deg);opacity:0}}
+</style>
 </head>
+
 <body>
+<div class="app">
 
-    <canvas id="coin-canvas"></canvas>
+<header class="top">
+<div style="display:flex;align-items:center;gap:8px">
+<div class="avatar">🐕</div>
+<div>
+<div class="brand">MASTER SPINE SHIBA</div>
+<small id="playerName">لاعب شيبا</small>
+</div>
+</div>
+<div class="balances">
+<div class="bal">🪙 <b id="coins">514.9K</b></div>
+<div class="bal">💎 <b id="gems">49</b></div>
+</div>
+</header>
 
-    <div class="top-bar">
-        <div class="ui-box">
-            <span style="font-size: 24px;">👑</span>
-            <div class="ui-text">المستوى 1</div>
-        </div>
-        <div class="ui-box">
-            <img src="coin.png" alt="coin">
-            <div class="ui-text" id="ui-coins">500</div>
-        </div>
-    </div>
+<main>
 
-    <div class="game-area">
-        <div class="machine" id="machine">
-            <div class="reels-display">
-                <div class="reel"><div class="reel-strip" id="reel1"></div></div>
-                <div class="reel"><div class="reel-strip" id="reel2"></div></div>
-                <div class="reel"><div class="reel-strip" id="reel3"></div></div>
-                <div class="win-line"></div>
-            </div>
-        </div>
+<section class="panel active" id="game">
+<div class="hero">
+<small style="color:#a5eaff;letter-spacing:2px">SHIBA LUCKY CASINO</small>
+<h1>🐕 عالم شيبا الذهبي 🐕</h1>
+<p>أدر البكرات واجمع الكنوز وطوّر قريتك!</p>
+</div>
 
-        <div class="controls">
-            <div class="spins-box">اللفات: <span id="ui-spins">10</span></div>
-            <button class="spin-btn" id="spinBtn">SPIN</button>
-            <button class="reload-btn" onclick="location.reload()">إعادة تعبئة اللفات</button>
-        </div>
-    </div>
+<div class="level">
+<div style="display:flex;justify-content:space-between">
+<b>👑 المستوى <span id="level">1</span></b>
+<b id="xpText">380 / 1000 XP</b>
+</div>
+<div class="bar"><i id="xpBar"></i></div>
+</div>
 
-    <div class="win-modal" id="winModal">
-        <h2 id="winTitle">JACKPOT!</h2>
-        <img id="winImg" src="coin.png" alt="Reward">
-        <p>ربحت <span id="winAmount">0</span> عملة!</p>
-    </div>
+<div class="machine">
+<div class="head">✨ SHIBA SPIN ✨</div>
 
-    <script>
-        // --- الأصوات ---
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioContext();
-        
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-            
-            if (type === 'spin') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-            } else if (type === 'win') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
-                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            }
-        }
+<div class="reels">
+<div class="reel"><div class="strip" id="reel0"></div></div>
+<div class="reel"><div class="strip" id="reel1"></div></div>
+<div class="reel"><div class="strip" id="reel2"></div></div>
+<div class="line"></div>
+</div>
 
-        // --- إعدادات اللعبة ---
-        const symbols = ['coin.png', 'diamond.png', 'shield.png'];
-        let state = { coins: 500, spins: 10, isSpinning: false };
+<div class="foot">
+<span>🐾 حظ شيبا معك!</span>
+<span class="energy">⚡ <b id="energy">49</b>/50</span>
+</div>
+</div>
 
-        const uiCoins = document.getElementById('ui-coins');
-        const uiSpins = document.getElementById('ui-spins');
-        const spinBtn = document.getElementById('spinBtn');
-        const winModal = document.getElementById('winModal');
-        const machine = document.getElementById('machine');
+<div class="controls">
+<div style="font-weight:900;margin-bottom:12px">
+اللفات المتبقية: <b id="spins" style="color:#ffdc66">10</b>
+</div>
+<button class="spin" id="spin">
+SPIN
+<small>اضغط للفّ البكرات</small>
+</button>
+</div>
 
-        function updateUI() {
-            uiCoins.innerText = state.coins;
-            uiSpins.innerText = state.spins;
-            spinBtn.disabled = state.spins <= 0 || state.isSpinning;
-        }
+<div class="quick">
+<button data-page="shop"><span>🛒</span>المتجر</button>
+<button data-page="village"><span>🏡</span>قرية شيبا</button>
+<button data-page="tasks"><span>🎁</span>المهام</button>
+</div>
+</section>
 
-        function populateReels() {
-            for (let i = 1; i <= 3; i++) {
-                const reel = document.getElementById(`reel${i}`);
-                let html = '';
-                for (let j = 0; j < 20; j++) {
-                    const randSym = symbols[Math.floor(Math.random() * symbols.length)];
-                    html += `<img src="${randSym}">`;
-                }
-                reel.innerHTML = html;
-            }
-        }
+<section class="panel" id="profile">
+<h2>🐕 الملف الشخصي</h2>
+<div class="card" style="text-align:center">
+<div style="font-size:60px">🐕</div>
+<h3 id="profileName">لاعب شيبا</h3>
+<button class="action" id="rename">تغيير الاسم</button>
+</div>
+<div class="stats">
+<div class="stat">المستوى<b id="pLevel">1</b></div>
+<div class="stat">العملات<b id="pCoins">0</b></div>
+<div class="stat">مرات اللعب<b id="pPlayed">0</b></div>
+<div class="stat">الانتصارات<b id="pWins">0</b></div>
+</div>
+</section>
 
-        function spin() {
-            if (state.isSpinning || state.spins <= 0) return;
+<section class="panel" id="rank">
+<h2>🏆 كأس التصنيف</h2>
+<div class="card">
+<div class="row">🥇 Shiba King <b>98,500</b></div>
+<div class="row">🥈 Moon Dog <b>76,200</b></div>
+<div class="row">🥉 Golden Paw <b>54,800</b></div>
+<div class="row">🐕 <span id="rankName">أنت</span><b id="rankCoins">500</b></div>
+<p class="muted">ترتيب تجريبي محلي.</p>
+</div>
+</section>
 
-            state.isSpinning = true;
-            state.spins--;
-            updateUI();
-            winModal.classList.remove('show');
-            populateReels();
-            playSound('spin');
+<section class="panel" id="shop">
+<h2>🛒 متجر شيبا</h2>
+<div class="card">
+<div class="row">⚡ 5 لفات إضافية <b>2,000 🪙</b><button class="action" data-buy="spins">شراء</button></div>
+<div class="row">💎 جوهرة <b>500 🪙</b><button class="action" data-buy="gem">شراء</button></div>
+<div class="row">🎟️ 10 لفات <b>3,500 🪙</b><button class="action" data-buy="big">شراء</button></div>
+</div>
+<p class="muted">عناصر افتراضية للتجربة.</p>
+</section>
 
-            const imageHeight = 80;
+<section class="panel" id="village">
+<h2>🏡 قرية شيبا</h2>
+<div class="card" style="text-align:center">
+<div style="font-size:90px">🏯</div>
+<h3>قرية باو الذهبية</h3>
+<p class="muted">طوّر قريتك لفتح مناطق جديدة.</p>
+<div class="row">مستوى القرية <b id="villageLevel">1</b></div>
+<button class="action" id="upgrade">تطوير — 2,500 🪙</button>
+</div>
+</section>
 
-            function animateReel(id, duration, targetIndex) {
-                const reel = document.getElementById(id);
-                reel.style.transition = 'none';
-                reel.style.transform = 'translateY(0px)';
-                void reel.offsetWidth;
+<section class="panel" id="tasks">
+<h2>🎁 مهام شيبا اليومية</h2>
+<div class="card">
+<div class="row">🎰 نفّذ 3 لفات <b id="taskSpins">0/3</b></div>
+<div class="row">🪙 اربح 100 عملة <b id="taskCoins">0/100</b></div>
+<button class="action" id="claim">استلام 1,000 🪙</button>
+</div>
+</section>
 
-                const moveDistance = (imageHeight * 15) + (targetIndex * imageHeight);
-                reel.style.transition = `transform ${duration}s cubic-bezier(0.1, 0.7, 0.1, 1)`;
-                reel.style.transform = `translateY(-${moveDistance}px)`;
-            }
+</main>
 
-            const res1 = Math.floor(Math.random() * 3);
-            const res2 = Math.floor(Math.random() * 3);
-            const res3 = Math.floor(Math.random() * 3);
+<nav class="nav">
+<button class="active" data-page="game"><span>🎰</span>اللعب</button>
+<button data-page="profile"><span>👤</span>حسابي</button>
+<button data-page="rank"><span>🏆</span>التصنيف</button>
+<button data-page="shop"><span>🛒</span>المتجر</button>
+<button data-page="village"><span>🏡</span>القرية</button>
+</nav>
 
-            animateReel('reel1', 2.5, res1);
-            animateReel('reel2', 3.0, res2);
-            animateReel('reel3', 3.5, res3);
+<div class="toast" id="toast">
+<b id="toastTitle"></b>
+<span id="toastText"></span>
+</div>
 
-            setTimeout(() => {
-                state.isSpinning = false;
-                updateUI();
-                checkWin(res1, res2, res3);
-            }, 3800);
-        }
+</div>
 
-        function checkWin(r1, r2, r3) {
-            let amount = 0;
-            let isJackpot = false;
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const symbols=['🪙','💰','💎','🐕','👑','🐾'];
 
-            if (r1 === r2 && r2 === r3) {
-                amount = 500;
-                isJackpot = true;
-                playSound('win');
-                machine.classList.add('shake');
-                setTimeout(() => machine.classList.remove('shake'), 500);
-                createCoinRain();
-                showModal(amount, "JACKPOT! 🎉");
-            } else if (r1 === r2 || r2 === r3 || r1 === r3) {
-                amount = 50;
-                playSound('win');
-                showModal(amount, "فوز رائع!");
-            } else {
-                amount = 10;
-                showModal(amount, "حظ أوفر!");
-            }
-            
-            state.coins += amount;
-            updateUI();
-        }
+let state={
+coins:514900,
+gems:49,
+spins:10,
+energy:49,
+level:1,
+xp:380,
+played:0,
+wins:0,
+name:'لاعب شيبا',
+village:1,
+earned:0,
+claimed:false
+};
 
-        function showModal(amount, title) {
-            document.getElementById('winTitle').innerText = title;
-            document.getElementById('winAmount').innerText = amount;
-            winModal.classList.add('show');
-            setTimeout(() => winModal.classList.remove('show'), 3000);
-        }
+let busy=false;
+let audio;
 
-        // --- مطر العملات ---
-        const canvas = document.getElementById('coin-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+try{
+state={...state,...JSON.parse(localStorage.getItem('mss-save')||'{}')};
+}catch{}
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+function save(){
+localStorage.setItem('mss-save',JSON.stringify(state));
+}
 
-        function createCoinRain() {
-            for (let i = 0; i < 50; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width, y: -50 - Math.random() * 100,
-                    size: 30 + Math.random() * 20, speedY: 3 + Math.random() * 5,
-                    speedX: -2 + Math.random() * 4, rotation: Math.random() * Math.PI,
-                    rotSpeed: -0.1 + Math.random() * 0.2
-                });
-            }
-        }
+function format(n){
+return n>=1000000?(n/1000000).toFixed(1)+'M':
+n>=10000?(n/1000).toFixed(1)+'K':
+Math.floor(n).toLocaleString('en-US');
+}
 
-        const coinImg = new Image(); coinImg.src = 'coin.png';
+function update(){
+['coins','gems','spins','energy','level'].forEach(k=>{
+$(k).textContent=format(state[k]);
+});
 
-        function updateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
-                p.y += p.speedY; p.x += p.speedX; p.rotation += p.rotSpeed;
-                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation);
-                ctx.drawImage(coinImg, -p.size/2, -p.size/2, p.size, p.size); ctx.restore();
-                if (p.y > canvas.height + 50) particles.splice(i, 1);
-            }
-            requestAnimationFrame(updateParticles);
-        }
-        updateParticles();
+$('xpText').textContent=state.xp+' / 1000 XP';
+$('xpBar').style.width=(state.xp/10)+'%';
 
-        populateReels();
-        updateUI();
-        spinBtn.addEventListener('click', spin);
-    </script>
+$('playerName').textContent=state.name;
+$('profileName').textContent=state.name;
+$('pLevel').textContent=state.level;
+$('pCoins').textContent=format(state.coins);
+$('pPlayed').textContent=state.played;
+$('pWins').textContent=state.wins;
+
+$('rankName').textContent=state.name;
+$('rankCoins').textContent=format(state.coins);
+$('villageLevel').textContent=state.village;
+
+$('taskSpins').textContent=Math.min(3,state.played)+'/3';
+$('taskCoins').textContent=Math.min(100,state.earned)+'/100';
+
+$('claim').disabled=state.claimed;
+$('claim').style.opacity=state.claimed?.5:1;
+
+$('spin').disabled=busy||state.spins<1;
+
+save();
+}
+
+function playSound(freq=440,duration=.15){
+try{
+audio??=new(window.AudioContext||window.webkitAudioContext)();
+audio.resume();
+
+const oscillator=audio.createOscillator();
+const gain=audio.createGain();
+
+oscillator.frequency.value=freq;
+oscillator.connect(gain);
+gain.connect(audio.destination);
+
+gain.gain.setValueAtTime(.07,audio.currentTime);
+gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);
+
+oscillator.start();
+oscillator.stop(audio.currentTime+duration);
+}catch{}
+}
+
+function notification(title,message){
+$('toastTitle').textContent=title;
+$('toastText').textContent=message;
+$('toast').classList.add('show');
+
+clearTimeout(notification.timer);
+
+notification.timer=setTimeout(()=>{
+$('toast').classList.remove('show');
+},2500);
+}
+
+function confetti(){
+for(let i=0;i<24;i++){
+const element=document.createElement('i');
+element.className='conf';
+element.textContent=['🪙','✨','🐾','💛'][i%4];
+element.style.left=Math.random()*100+'vw';
+
+document.body.append(element);
+
+setTimeout(()=>element.remove(),2200);
+}
+}
+
+function spin(){
+if(busy||state.spins<1)return;
+
+busy=true;
+state.spins--;
+state.played++;
+
+update();
+playSound(160,.3);
+
+const result=Array.from({length:3},()=>{
+return symbols[Math.floor(Math.random()*symbols.length)];
+});
+
+for(let i=0;i<3;i++){
+
+const reel=$('reel'+i);
+
+const sequence=Array.from({length:15},()=>{
+return symbols[Math.floor(Math.random()*symbols.length)];
+});
+
+sequence.push(result[i]);
+
+reel.innerHTML=sequence.map(symbol=>
+'<div class="symbol">'+symbol+'</div>'
+).join('');
+
+reel.style.transition='none';
+reel.style.transform='translateY(0)';
+
+reel.offsetHeight;
+
+reel.style.transition='transform '+(1.8+i*.55)+'s cubic-bezier(.12,.72,.12,1)';
+
+reel.style.transform=
+'translateY(-'+(15*reel.parentElement.clientHeight)+'px)';
+}
+
+setTimeout(()=>{
+
+const triple=result.every(symbol=>symbol===result[0]);
+const pair=new Set(result).size<3;
+
+const prize=triple?1500:pair?250:50;
+
+state.coins+=prize;
+state.earned+=prize;
+state.wins+=pair?1:0;
+
+state.xp+=triple?100:pair?50:20;
+
+if(state.xp>=1000){
+state.level++;
+state.xp-=1000;
+notification('مستوى جديد!','وصلت إلى المستوى '+state.level);
+}else{
+notification(
+triple?'🏆 JACKPOT!':pair?'فوز رائع!':'مكافأة شيبا',
+'ربحت '+format(prize)+' عملة'
+);
+}
+
+if(pair)confetti();
+
+playSound(triple?900:620,.3);
+
+busy=false;
+update();
+
+},3900);
+}
+
+function changePage(id){
+document.querySelectorAll('.panel').forEach(panel=>{
+panel.classList.toggle('active',panel.id===id);
+});
+
+document.querySelectorAll('[data-page]').forEach(button=>{
+button.classList.toggle('active',button.dataset.page===id);
+});
+}
+
+document.querySelectorAll('[data-page]').forEach(button=>{
+button.addEventListener('click',()=>{
+changePage(button.dataset.page);
+});
+});
+
+document.querySelectorAll('[data-buy]').forEach(button=>{
+button.addEventListener('click',()=>{
+
+const type=button.dataset.buy;
+
+const cost=type==='spins'?2000:
+type==='gem'?500:3500;
+
+if(state.coins<cost){
+notification('رصيد غير كاف','اربح عملات إضافية');
+return;
+}
+
+state.coins-=cost;
+
+if(type==='gem'){
+state.gems++;
+}else{
+state.spins+=type==='spins'?5:10;
+}
+
+update();
+notification('تم الشراء','أضيفت المكافأة لحسابك');
+
+});
+});
+
+$('spin').addEventListener('click',spin);
+
+$('upgrade').addEventListener('click',()=>{
+
+if(state.coins<2500){
+notification('رصيد غير كاف','تحتاج 2,500 عملة');
+return;
+}
+
+state.coins-=2500;
+state.village++;
+
+update();
+
+notification('تطوير ناجح','مستوى القرية '+state.village);
+confetti();
+
+});
+
+$('claim').addEventListener('click',()=>{
+
+if(state.claimed||state.played<3||state.earned<100){
+notification('المهمة لم تكتمل','نفّذ 3 لفات واربح 100 عملة');
+return;
+}
+
+state.claimed=true;
+state.coins+=1000;
+
+update();
+
+notification('مكافأة يومية','حصلت على 1,000 عملة');
+confetti();
+
+});
+
+$('rename').addEventListener('click',()=>{
+
+const name=prompt('اسم اللاعب',state.name);
+
+if(name&&name.trim()){
+state.name=name.trim().slice(0,20);
+update();
+}
+
+});
+
+for(let i=0;i<3;i++){
+$('reel'+i).innerHTML=
+Array.from({length:3},()=>'<div class="symbol">'+symbols[Math.floor(Math.random()*symbols.length)]+'</div>').join('');
+}
+
+const telegram=window.Telegram?.WebApp;
+
+if(telegram){
+telegram.ready();
+telegram.expand();
+
+if(telegram.initDataUnsafe?.user&&state.name==='لاعب شيبا'){
+state.name=telegram.initDataUnsafe.user.first_name||state.name;
+}
+}
+
+update();
+
+})();
+</script>
 </body>
 </html>
