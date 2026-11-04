@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Spin Masters ShiBa V4</title>
+    <title>Spin Masters ShiBa V5</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -13,6 +13,7 @@
             color: white;
             text-align: center;
             padding: 15px;
+            padding-bottom: 80px; /* مساحة للشريط السفلي */
             min-height: 100vh;
         }
         header {
@@ -21,7 +22,6 @@
             color: #ffcf35;
             margin: 10px 0 20px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            letter-spacing: 1px;
         }
         .card {
             background: rgba(23, 28, 66, 0.9);
@@ -42,7 +42,7 @@
         }
         .stat b { display: block; font-size: 18px; margin-top: 5px; color: #ffcf35; }
         
-        /* تنسيق عجلة الحظ */
+        /* عجلة الحظ */
         .wheel-container { position: relative; width: 260px; height: 260px; margin: 20px auto; }
         .pointer {
             position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
@@ -78,57 +78,117 @@
         }
         button:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35c00; }
         button:disabled { opacity: 0.6; transform: translateY(3px); box-shadow: 0 2px 0 #b35c00; }
-        
         .small { background: linear-gradient(90deg, #5a4b8c, #3b2e66); color: white; box-shadow: 0 5px 0 #1e1442; }
-        .small:active { box-shadow: 0 2px 0 #1e1442; }
         
         #message { color: #ffdc5b; font-size: 18px; min-height: 25px; font-weight: bold; margin: 10px 0; }
+
+        /* الشريط السفلي للتنقل */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #171c42; display: flex; justify-content: space-around;
+            padding: 10px 0; border-top: 2px solid #7653cb; z-index: 100;
+        }
+        .nav-btn {
+            background: none; border: none; color: #a69ebd; font-size: 16px;
+            box-shadow: none; width: 50%; margin: 0; padding: 10px;
+        }
+        .nav-btn.active { color: #ffcf35; text-shadow: 0 0 10px #ffcf35; }
+        
+        /* تنسيقات القرية */
+        .building-item {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #292653; padding: 15px; border-radius: 15px; margin-bottom: 15px;
+        }
+        .building-icon { font-size: 40px; }
+        .building-info { text-align: right; flex: 1; padding-right: 15px; }
+        .building-info h3 { margin: 0 0 5px; font-size: 18px; color: #fff; }
+        .building-info p { margin: 0; font-size: 14px; color: #a69ebd; }
+        .upgrade-btn { width: auto; padding: 10px 15px; font-size: 14px; margin: 0; }
     </style>
 </head>
 <body>
-    <header>👑 SPIN MASTERS SHIBA V4</header>
+    <header id="main-header">👑 SPIN MASTERS SHIBA</header>
 
-    <div class="card">
-        <div style="font-size: 60px; margin-bottom: 10px;">🐕</div>
-        <h2>مرحباً بك في عالم Shiba</h2>
-        <div class="stats">
-            <div class="stat">🪙 العملات<br><b id="coins">1000</b></div>
-            <div class="stat">💎 الجواهر<br><b id="gems">50</b></div>
-            <div class="stat">⭐ المستوى<br><b id="level">1</b></div>
+    <!-- شاشة العجلة -->
+    <div id="view-spin">
+        <div class="card">
+            <div class="stats">
+                <div class="stat">🪙 العملات<br><b id="coins">1000</b></div>
+                <div class="stat">💎 الجواهر<br><b id="gems">50</b></div>
+                <div class="stat">⭐ المستوى<br><b id="level">1</b></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎡 عجلة الحظ</h2>
+            <div class="wheel-container">
+                <div class="pointer"></div>
+                <div class="wheel" id="wheel">🐾</div>
+            </div>
+            <div id="message">هل أنت مستعد للفوز؟</div>
+            <button id="spin" onclick="spin()">🎯 ابدأ الدوران (10 عملات)</button>
         </div>
     </div>
 
-    <div class="card">
-        <h2>🎡 عجلة الحظ</h2>
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel">🐾</div>
+    <!-- شاشة القرية -->
+    <div id="view-village" style="display: none;">
+        <div class="card">
+            <div class="stats">
+                <div class="stat">🪙 العملات<br><b id="coins-village">1000</b></div>
+            </div>
         </div>
-        <div id="message">هل أنت مستعد للفوز؟</div>
-        <button id="spin" onclick="spin()">🎯 ابدأ الدوران (10 عملات)</button>
+
+        <div class="card">
+            <h2>🏘️ قريتك</h2>
+            <p style="color:#a69ebd; font-size:14px; margin-bottom: 20px;">قم بترقية المباني لتصبح قريتك الأجمل!</p>
+            
+            <div class="building-item">
+                <div class="building-icon">🏠</div>
+                <div class="building-info">
+                    <h3>بيت الكلب</h3>
+                    <p>المستوى: <span id="lvl-house">1</span></p>
+                </div>
+                <button class="upgrade-btn" onclick="upgrade('house')">ترقية (<span id="cost-house">500</span>)</button>
+            </div>
+
+            <div class="building-item">
+                <div class="building-icon">🌳</div>
+                <div class="building-info">
+                    <h3>حديقة الشيبا</h3>
+                    <p>المستوى: <span id="lvl-garden">1</span></p>
+                </div>
+                <button class="upgrade-btn" onclick="upgrade('garden')">ترقية (<span id="cost-garden">1500</span>)</button>
+            </div>
+
+            <div class="building-item">
+                <div class="building-icon">⛲</div>
+                <div class="building-info">
+                    <h3>النافورة الذهبية</h3>
+                    <p>المستوى: <span id="lvl-fountain">1</span></p>
+                </div>
+                <button class="upgrade-btn" onclick="upgrade('fountain')">ترقية (<span id="cost-fountain">3000</span>)</button>
+            </div>
+        </div>
     </div>
 
-    <div class="card">
-        <h2>🎁 صندوق الكنوز</h2>
-        <div style="font-size:55px">💎🎁💰</div>
-        <button class="small" onclick="openBox()">افتح صندوقاً (100 عملة)</button>
-    </div>
-
-    <div class="card">
-        <h2>🏆 حساب اللاعب</h2>
-        <p>النقاط: <b id="points">0</b></p>
-        <button class="small" onclick="showProfile()">ملفي الشخصي</button>
-        <button class="small" onclick="resetGame()">إعادة ضبط التجربة</button>
+    <!-- الشريط السفلي -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" id="btn-nav-spin" onclick="switchTab('spin')">🎡 العجلة</button>
+        <button class="nav-btn" id="btn-nav-village" onclick="switchTab('village')">🏘️ القرية</button>
     </div>
 
     <script>
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
+        // المتغيرات الأساسية
         let coins = Number(localStorage.coins ?? 1000);
         let gems = Number(localStorage.gems ?? 50);
         let points = Number(localStorage.points ?? 0);
         let busy = false;
+
+        // بيانات المباني
+        let buildings = JSON.parse(localStorage.buildings ?? '{"house":{"level":1,"cost":500},"garden":{"level":1,"cost":1500},"fountain":{"level":1,"cost":3000}}');
 
         const rewards = [
             {name:"100 عملة", coins:100},
@@ -141,20 +201,48 @@
             {name:"20 جواهر", gems:20}
         ];
 
+        // دالة الحفظ
         function save() {
             localStorage.coins = coins;
             localStorage.gems = gems;
             localStorage.points = points;
+            localStorage.buildings = JSON.stringify(buildings);
             render();
         }
 
+        // دالة تحديث الشاشة
         function render() {
+            // تحديث الأرقام العلوية
             document.getElementById("coins").textContent = coins;
+            document.getElementById("coins-village").textContent = coins;
             document.getElementById("gems").textContent = gems;
-            document.getElementById("points").textContent = points;
             document.getElementById("level").textContent = 1 + Math.floor(points / 500);
+            
+            // تحديث المباني في القرية
+            for (let key in buildings) {
+                document.getElementById("lvl-" + key).textContent = buildings[key].level;
+                document.getElementById("cost-" + key).textContent = buildings[key].cost;
+            }
         }
 
+        // التنقل بين الشاشات
+        function switchTab(tab) {
+            if (tab === 'spin') {
+                document.getElementById('view-spin').style.display = 'block';
+                document.getElementById('view-village').style.display = 'none';
+                document.getElementById('btn-nav-spin').classList.add('active');
+                document.getElementById('btn-nav-village').classList.remove('active');
+                document.getElementById('main-header').textContent = "👑 SPIN MASTERS SHIBA";
+            } else {
+                document.getElementById('view-spin').style.display = 'none';
+                document.getElementById('view-village').style.display = 'block';
+                document.getElementById('btn-nav-village').classList.add('active');
+                document.getElementById('btn-nav-spin').classList.remove('active');
+                document.getElementById('main-header').textContent = "🏘️ قريتك";
+            }
+        }
+
+        // دوران العجلة
         function spin() {
             if (busy) return;
             if (coins < 10) { message("ليس لديك عملات كافية!"); return; }
@@ -165,8 +253,7 @@
             const r = rewards[i];
             const wheel = document.getElementById("wheel");
             
-            // دوران العجلة
-            const totalRotation = 1800 + (i * 45); // 5 لفات + الزاوية المطلوبة
+            const totalRotation = 1800 + (i * 45);
             wheel.style.transform = `rotate(${totalRotation}deg)`;
             
             document.getElementById("spin").disabled = true;
@@ -183,26 +270,26 @@
             }, 4100);
         }
 
-        function openBox() {
-            if (coins < 100) { message("تحتاج إلى 100 عملة!"); return; }
-            coins -= 100;
-            const prize = 50 + Math.floor(Math.random() * 251);
-            coins += prize;
-            points += 20;
-            message("🎁 حصلت على " + prize + " عملة!");
-            save();
+        // ترقية المباني
+        function upgrade(buildingKey) {
+            let b = buildings[buildingKey];
+            if (coins >= b.cost) {
+                coins -= b.cost;
+                b.level += 1;
+                // زيادة تكلفة الترقية للمرة القادمة (مثلاً 1.5 ضعف السعر)
+                b.cost = Math.floor(b.cost * 1.5); 
+                points += 100; // نقاط إضافية عند البناء
+                save();
+                // اهتزاز خفيف كتأثير بصري
+                if (tg) tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                // إذا لم يكن لديه عملات كافية
+                alert("ليس لديك عملات كافية لترقية هذا المبنى! اذهب والعب بالعجلة.");
+                if (tg) tg.HapticFeedback.notificationOccurred('error');
+            }
         }
 
         function message(t) { document.getElementById("message").textContent = t; }
-        
-        function showProfile() {
-            message("⭐ مستواك: " + (1 + Math.floor(points / 500)) + " | نقاطك: " + points);
-        }
-        
-        function resetGame() {
-            coins = 1000; gems = 50; points = 0; save();
-            message("تمت إعادة التجربة");
-        }
 
         render();
     </script>
