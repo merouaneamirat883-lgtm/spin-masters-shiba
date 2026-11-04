@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Spin Masters ShiBa V5</title>
+    <title>Spin Masters ShiBa V6</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -13,31 +13,21 @@
             color: white;
             text-align: center;
             padding: 15px;
-            padding-bottom: 80px; /* مساحة للشريط السفلي */
+            padding-bottom: 80px;
             min-height: 100vh;
         }
         header {
-            font-size: 24px;
-            font-weight: 900;
-            color: #ffcf35;
-            margin: 10px 0 20px;
+            font-size: 24px; font-weight: 900; color: #ffcf35; margin: 10px 0 20px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .card {
-            background: rgba(23, 28, 66, 0.9);
-            border: 1px solid #7653cb;
-            border-radius: 20px;
-            padding: 20px;
-            margin: 15px auto;
-            max-width: 440px;
+            background: rgba(23, 28, 66, 0.9); border: 1px solid #7653cb;
+            border-radius: 20px; padding: 20px; margin: 15px auto; max-width: 440px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
         .stats { display: flex; justify-content: space-around; gap: 10px; }
         .stat {
-            background: #292653;
-            padding: 15px 10px;
-            border-radius: 15px;
-            flex: 1;
+            background: #292653; padding: 15px 10px; border-radius: 15px; flex: 1;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
         }
         .stat b { display: block; font-size: 18px; margin-top: 5px; color: #ffcf35; }
@@ -46,35 +36,25 @@
         .wheel-container { position: relative; width: 260px; height: 260px; margin: 20px auto; }
         .pointer {
             position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 15px solid transparent; border-right: 15px solid transparent;
-            border-top: 30px solid #ff4b85;
-            z-index: 10;
-            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.5));
+            width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
+            border-top: 30px solid #ff4b85; z-index: 10; filter: drop-shadow(0 4px 2px rgba(0,0,0,0.5));
         }
         .wheel {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 9px solid #ffd34e;
+            width: 100%; height: 100%; border-radius: 50%; border: 9px solid #ffd34e;
             background: conic-gradient(
-                #ffcf36 0 45deg, #a52cff 45deg 90deg,
-                #23c9a2 90deg 135deg, #ff4b85 135deg 180deg,
-                #ffcf36 180deg 225deg, #a52cff 225deg 270deg,
-                #23c9a2 270deg 315deg, #ff4b85 315deg 360deg
+                #ffcf36 0 45deg, #a52cff 45deg 90deg, #23c9a2 90deg 135deg, #ff4b85 135deg 180deg,
+                #ffcf36 180deg 225deg, #a52cff 225deg 270deg, #23c9a2 270deg 315deg, #ff4b85 315deg 360deg
             );
             box-shadow: 0 0 30px #a64bff, inset 0 0 20px rgba(0,0,0,0.5);
             display: flex; align-items: center; justify-content: center;
-            font-size: 55px;
-            transition: transform 4s cubic-bezier(0.15, 0.7, 0.1, 1);
+            font-size: 55px; transition: transform 4s cubic-bezier(0.15, 0.7, 0.1, 1);
         }
         
         button {
-            border: 0; border-radius: 14px; padding: 16px;
-            margin: 6px 0; background: linear-gradient(90deg, #ffbd22, #ff7a00);
-            color: #241039; font-size: 18px; font-weight: 900;
-            width: 100%; cursor: pointer;
-            box-shadow: 0 5px 0 #b35c00, 0 8px 15px rgba(0,0,0,0.3);
-            transition: transform 0.1s;
+            border: 0; border-radius: 14px; padding: 16px; margin: 6px 0;
+            background: linear-gradient(90deg, #ffbd22, #ff7a00); color: #241039;
+            font-size: 18px; font-weight: 900; width: 100%; cursor: pointer;
+            box-shadow: 0 5px 0 #b35c00, 0 8px 15px rgba(0,0,0,0.3); transition: transform 0.1s;
         }
         button:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35c00; }
         button:disabled { opacity: 0.6; transform: translateY(3px); box-shadow: 0 2px 0 #b35c00; }
@@ -82,11 +62,11 @@
         
         #message { color: #ffdc5b; font-size: 18px; min-height: 25px; font-weight: bold; margin: 10px 0; }
 
-        /* الشريط السفلي للتنقل */
+        /* الشريط السفلي */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: #171c42; display: flex; justify-content: space-around;
-            padding: 10px 0; border-top: 2px solid #7653cb; z-index: 100;
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #171c42;
+            display: flex; justify-content: space-around; padding: 10px 0;
+            border-top: 2px solid #7653cb; z-index: 100;
         }
         .nav-btn {
             background: none; border: none; color: #a69ebd; font-size: 16px;
@@ -94,7 +74,7 @@
         }
         .nav-btn.active { color: #ffcf35; text-shadow: 0 0 10px #ffcf35; }
         
-        /* تنسيقات القرية */
+        /* القرية */
         .building-item {
             display: flex; align-items: center; justify-content: space-between;
             background: #292653; padding: 15px; border-radius: 15px; margin-bottom: 15px;
@@ -104,6 +84,18 @@
         .building-info h3 { margin: 0 0 5px; font-size: 18px; color: #fff; }
         .building-info p { margin: 0; font-size: 14px; color: #a69ebd; }
         .upgrade-btn { width: auto; padding: 10px 15px; font-size: 14px; margin: 0; }
+
+        /* نافذة الهجوم المنبثقة */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: #292653; padding: 30px 20px; border-radius: 20px;
+            border: 2px solid #ff4b85; width: 90%; max-width: 350px;
+        }
+        .modal-content h2 { color: #ff4b85; margin-top: 0; }
+        .attack-btn { background: linear-gradient(90deg, #ff4b85, #d81b60); color: white; box-shadow: 0 5px 0 #8e0038; margin-top: 15px;}
     </style>
 </head>
 <body>
@@ -113,9 +105,9 @@
     <div id="view-spin">
         <div class="card">
             <div class="stats">
-                <div class="stat">🪙 العملات<br><b id="coins">1000</b></div>
-                <div class="stat">💎 الجواهر<br><b id="gems">50</b></div>
-                <div class="stat">⭐ المستوى<br><b id="level">1</b></div>
+                <div class="stat">🪙 عملات<br><b id="coins">1000</b></div>
+                <div class="stat">💎 جواهر<br><b id="gems">50</b></div>
+                <div class="stat">🛡️ دروع<br><b id="shields">0</b></div>
             </div>
         </div>
 
@@ -137,11 +129,8 @@
                 <div class="stat">🪙 العملات<br><b id="coins-village">1000</b></div>
             </div>
         </div>
-
         <div class="card">
             <h2>🏘️ قريتك</h2>
-            <p style="color:#a69ebd; font-size:14px; margin-bottom: 20px;">قم بترقية المباني لتصبح قريتك الأجمل!</p>
-            
             <div class="building-item">
                 <div class="building-icon">🏠</div>
                 <div class="building-info">
@@ -150,7 +139,6 @@
                 </div>
                 <button class="upgrade-btn" onclick="upgrade('house')">ترقية (<span id="cost-house">500</span>)</button>
             </div>
-
             <div class="building-item">
                 <div class="building-icon">🌳</div>
                 <div class="building-info">
@@ -158,15 +146,6 @@
                     <p>المستوى: <span id="lvl-garden">1</span></p>
                 </div>
                 <button class="upgrade-btn" onclick="upgrade('garden')">ترقية (<span id="cost-garden">1500</span>)</button>
-            </div>
-
-            <div class="building-item">
-                <div class="building-icon">⛲</div>
-                <div class="building-info">
-                    <h3>النافورة الذهبية</h3>
-                    <p>المستوى: <span id="lvl-fountain">1</span></p>
-                </div>
-                <button class="upgrade-btn" onclick="upgrade('fountain')">ترقية (<span id="cost-fountain">3000</span>)</button>
             </div>
         </div>
     </div>
@@ -177,55 +156,64 @@
         <button class="nav-btn" id="btn-nav-village" onclick="switchTab('village')">🏘️ القرية</button>
     </div>
 
+    <!-- نافذة الهجوم (مخفية افتراضياً) -->
+    <div class="modal" id="attack-modal">
+        <div class="modal-content">
+            <h2>⚔️ لقد حصلت على هجوم!</h2>
+            <div style="font-size: 60px; margin: 10px 0;">😈</div>
+            <p>لقد وجدت قرية اللاعب <b id="enemy-name">Ali_Pro</b>!</p>
+            <p>هل تريد مهاجمتها وسرقة عملاتها؟</p>
+            <button class="attack-btn" onclick="doAttack()">⚔️ اهجم الآن!</button>
+            <button class="small" onclick="closeModal()" style="margin-top:10px;">تجاهل (إلغاء)</button>
+        </div>
+    </div>
+
     <script>
         const tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // المتغيرات الأساسية
+        // المتغيرات
         let coins = Number(localStorage.coins ?? 1000);
         let gems = Number(localStorage.gems ?? 50);
+        let shields = Number(localStorage.shields ?? 0);
         let points = Number(localStorage.points ?? 0);
         let busy = false;
 
-        // بيانات المباني
-        let buildings = JSON.parse(localStorage.buildings ?? '{"house":{"level":1,"cost":500},"garden":{"level":1,"cost":1500},"fountain":{"level":1,"cost":3000}}');
+        let buildings = JSON.parse(localStorage.buildings ?? '{"house":{"level":1,"cost":500},"garden":{"level":1,"cost":1500}}');
 
+        // أضفنا الهجوم والدرع للعجلة
         const rewards = [
-            {name:"100 عملة", coins:100},
-            {name:"50 عملة", coins:50},
-            {name:"10 جواهر", gems:10},
-            {name:"200 عملة", coins:200},
-            {name:"5 جواهر", gems:5},
-            {name:"75 عملة", coins:75},
-            {name:"300 عملة", coins:300},
-            {name:"20 جواهر", gems:20}
+            {name:"100 عملة", type:"coins", amount:100},
+            {name:"سيف (هجوم)", type:"attack", amount:1},
+            {name:"50 عملة", type:"coins", amount:50},
+            {name:"درع (حماية)", type:"shield", amount:1},
+            {name:"200 عملة", type:"coins", amount:200},
+            {name:"10 جواهر", type:"gems", amount:10},
+            {name:"سيف (هجوم)", type:"attack", amount:1},
+            {name:"درع (حماية)", type:"shield", amount:1}
         ];
 
-        // دالة الحفظ
         function save() {
             localStorage.coins = coins;
             localStorage.gems = gems;
+            localStorage.shields = shields;
             localStorage.points = points;
             localStorage.buildings = JSON.stringify(buildings);
             render();
         }
 
-        // دالة تحديث الشاشة
         function render() {
-            // تحديث الأرقام العلوية
             document.getElementById("coins").textContent = coins;
             document.getElementById("coins-village").textContent = coins;
             document.getElementById("gems").textContent = gems;
-            document.getElementById("level").textContent = 1 + Math.floor(points / 500);
+            document.getElementById("shields").textContent = shields;
             
-            // تحديث المباني في القرية
             for (let key in buildings) {
                 document.getElementById("lvl-" + key).textContent = buildings[key].level;
                 document.getElementById("cost-" + key).textContent = buildings[key].cost;
             }
         }
 
-        // التنقل بين الشاشات
         function switchTab(tab) {
             if (tab === 'spin') {
                 document.getElementById('view-spin').style.display = 'block';
@@ -242,7 +230,6 @@
             }
         }
 
-        // دوران العجلة
         function spin() {
             if (busy) return;
             if (coins < 10) { message("ليس لديك عملات كافية!"); return; }
@@ -253,44 +240,89 @@
             const r = rewards[i];
             const wheel = document.getElementById("wheel");
             
-            const totalRotation = 1800 + (i * 45);
-            wheel.style.transform = `rotate(${totalRotation}deg)`;
+            wheel.style.transform = `rotate(${1800 + (i * 45)}deg)`;
             
             document.getElementById("spin").disabled = true;
             save();
             
             setTimeout(() => {
-                coins += r.coins || 0;
-                gems += r.gems || 0;
+                if (r.type === 'coins') {
+                    coins += r.amount;
+                    message("🎉 ربحت " + r.amount + " عملة");
+                } else if (r.type === 'gems') {
+                    gems += r.amount;
+                    message("💎 ربحت " + r.amount + " جواهر");
+                } else if (r.type === 'shield') {
+                    shields += r.amount;
+                    message("🛡️ حصلت على درع! (لديك " + shields + " دروع)");
+                } else if (r.type === 'attack') {
+                    message("⚔️ لقد حصلت على هجوم!");
+                    openAttackModal();
+                }
+                
                 points += 25;
-                message("🎉 ربحت " + r.name);
                 save();
                 busy = false;
                 document.getElementById("spin").disabled = false;
             }, 4100);
         }
 
-        // ترقية المباني
         function upgrade(buildingKey) {
             let b = buildings[buildingKey];
             if (coins >= b.cost) {
                 coins -= b.cost;
                 b.level += 1;
-                // زيادة تكلفة الترقية للمرة القادمة (مثلاً 1.5 ضعف السعر)
                 b.cost = Math.floor(b.cost * 1.5); 
-                points += 100; // نقاط إضافية عند البناء
+                points += 100;
                 save();
-                // اهتزاز خفيف كتأثير بصري
                 if (tg) tg.HapticFeedback.notificationOccurred('success');
             } else {
-                // إذا لم يكن لديه عملات كافية
-                alert("ليس لديك عملات كافية لترقية هذا المبنى! اذهب والعب بالعجلة.");
-                if (tg) tg.HapticFeedback.notificationOccurred('error');
+                alert("ليس لديك عملات كافية!");
             }
         }
 
-        function message(t) { document.getElementById("message").textContent = t; }
+        // --- دوال الهجوم ---
+        const enemies = ["Ali_Pro", "ShibaKing", "CryptoBoy", "Sara_Gamer", "Max_Dog"];
+        
+        function openAttackModal() {
+            // اختيار خصم عشوائي
+            const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)];
+            document.getElementById("enemy-name").textContent = randomEnemy;
+            document.getElementById("attack-modal").style.display = "flex";
+        }
 
+        function closeModal() {
+            document.getElementById("attack-modal").style.display = "none";
+            message("لقد تجاهلت الهجوم.");
+        }
+
+        function doAttack() {
+            closeModal();
+            // سرقة عملات عشوائية (بين 50 و 300)
+            const stolen = Math.floor(Math.random() * 250) + 50;
+            coins += stolen;
+            points += 50;
+            message("⚔️ نجح الهجوم! سرقت " + stolen + " عملة!");
+            save();
+            if (tg) tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        // دالة بسيطة لمحاكاة هجوم الكلاب الأخرى عليك (تحدث كل فترة)
+        setInterval(() => {
+            if (coins > 500 && Math.random() > 0.7) {
+                if (shields > 0) {
+                    shields--;
+                    message("🛡️ تعرضت لهجوم ولكن الدروع صدته!");
+                } else {
+                    const lost = Math.floor(coins * 0.1); // خسارة 10% من العملات
+                    coins -= lost;
+                    message("💥 تعرضت لهجوم! تمت سرقة " + lost + " عملة.");
+                }
+                save();
+            }
+        }, 45000); // كل 45 ثانية
+
+        function message(t) { document.getElementById("message").textContent = t; }
         render();
     </script>
 </body>
