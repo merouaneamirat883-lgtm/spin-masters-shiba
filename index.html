@@ -3,33 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Spin Masters ShiBa V6</title>
+    <title>Spin Masters ShiBa V7</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body {
-            margin: 0;
-            background: linear-gradient(150deg, #0a0e27, #2a105a, #0a0e27);
-            color: white;
-            text-align: center;
-            padding: 15px;
-            padding-bottom: 80px;
-            min-height: 100vh;
+            margin: 0; background: linear-gradient(150deg, #0a0e27, #2a105a, #0a0e27);
+            color: white; text-align: center; padding: 15px; padding-bottom: 80px; min-height: 100vh;
         }
-        header {
-            font-size: 24px; font-weight: 900; color: #ffcf35; margin: 10px 0 20px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
+        header { font-size: 24px; font-weight: 900; color: #ffcf35; margin: 10px 0 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .card {
             background: rgba(23, 28, 66, 0.9); border: 1px solid #7653cb;
             border-radius: 20px; padding: 20px; margin: 15px auto; max-width: 440px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
         .stats { display: flex; justify-content: space-around; gap: 10px; }
-        .stat {
-            background: #292653; padding: 15px 10px; border-radius: 15px; flex: 1;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
-        }
+        .stat { background: #292653; padding: 15px 10px; border-radius: 15px; flex: 1; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
         .stat b { display: block; font-size: 18px; margin-top: 5px; color: #ffcf35; }
         
         /* عجلة الحظ */
@@ -62,38 +51,23 @@
         
         #message { color: #ffdc5b; font-size: 18px; min-height: 25px; font-weight: bold; margin: 10px 0; }
 
-        /* الشريط السفلي */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; background: #171c42;
             display: flex; justify-content: space-around; padding: 10px 0;
             border-top: 2px solid #7653cb; z-index: 100;
         }
-        .nav-btn {
-            background: none; border: none; color: #a69ebd; font-size: 16px;
-            box-shadow: none; width: 50%; margin: 0; padding: 10px;
-        }
+        .nav-btn { background: none; border: none; color: #a69ebd; font-size: 16px; box-shadow: none; width: 50%; margin: 0; padding: 10px; }
         .nav-btn.active { color: #ffcf35; text-shadow: 0 0 10px #ffcf35; }
         
-        /* القرية */
-        .building-item {
-            display: flex; align-items: center; justify-content: space-between;
-            background: #292653; padding: 15px; border-radius: 15px; margin-bottom: 15px;
-        }
+        .building-item { display: flex; align-items: center; justify-content: space-between; background: #292653; padding: 15px; border-radius: 15px; margin-bottom: 15px; }
         .building-icon { font-size: 40px; }
         .building-info { text-align: right; flex: 1; padding-right: 15px; }
         .building-info h3 { margin: 0 0 5px; font-size: 18px; color: #fff; }
         .building-info p { margin: 0; font-size: 14px; color: #a69ebd; }
         .upgrade-btn { width: auto; padding: 10px 15px; font-size: 14px; margin: 0; }
 
-        /* نافذة الهجوم المنبثقة */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: #292653; padding: 30px 20px; border-radius: 20px;
-            border: 2px solid #ff4b85; width: 90%; max-width: 350px;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: #292653; padding: 30px 20px; border-radius: 20px; border: 2px solid #ff4b85; width: 90%; max-width: 350px; }
         .modal-content h2 { color: #ff4b85; margin-top: 0; }
         .attack-btn { background: linear-gradient(90deg, #ff4b85, #d81b60); color: white; box-shadow: 0 5px 0 #8e0038; margin-top: 15px;}
     </style>
@@ -101,14 +75,15 @@
 <body>
     <header id="main-header">👑 SPIN MASTERS SHIBA</header>
 
-    <!-- شاشة العجلة -->
     <div id="view-spin">
         <div class="card">
             <div class="stats">
-                <div class="stat">🪙 عملات<br><b id="coins">1000</b></div>
-                <div class="stat">💎 جواهر<br><b id="gems">50</b></div>
+                <div class="stat">🪙 عملات<br><b id="coins">0</b></div>
+                <div class="stat">💎 جواهر<br><b id="gems">0</b></div>
                 <div class="stat">🛡️ دروع<br><b id="shields">0</b></div>
             </div>
+            <!-- زر المكافأة اليومية -->
+            <button class="small" id="daily-btn" onclick="claimDaily()" style="margin-top: 15px; display: none;">🎁 استلم مكافأتك اليومية!</button>
         </div>
 
         <div class="card">
@@ -117,52 +92,40 @@
                 <div class="pointer"></div>
                 <div class="wheel" id="wheel">🐾</div>
             </div>
-            <div id="message">هل أنت مستعد للفوز؟</div>
-            <button id="spin" onclick="spin()">🎯 ابدأ الدوران (10 عملات)</button>
+            <div id="message">جاري تحميل بياناتك من تلغرام...</div>
+            <button id="spin" onclick="spin()" disabled>🎯 ابدأ الدوران (10 عملات)</button>
         </div>
     </div>
 
-    <!-- شاشة القرية -->
     <div id="view-village" style="display: none;">
         <div class="card">
-            <div class="stats">
-                <div class="stat">🪙 العملات<br><b id="coins-village">1000</b></div>
-            </div>
+            <div class="stats"><div class="stat">🪙 العملات<br><b id="coins-village">0</b></div></div>
         </div>
         <div class="card">
             <h2>🏘️ قريتك</h2>
             <div class="building-item">
                 <div class="building-icon">🏠</div>
-                <div class="building-info">
-                    <h3>بيت الكلب</h3>
-                    <p>المستوى: <span id="lvl-house">1</span></p>
-                </div>
+                <div class="building-info"><h3>بيت الكلب</h3><p>المستوى: <span id="lvl-house">1</span></p></div>
                 <button class="upgrade-btn" onclick="upgrade('house')">ترقية (<span id="cost-house">500</span>)</button>
             </div>
             <div class="building-item">
                 <div class="building-icon">🌳</div>
-                <div class="building-info">
-                    <h3>حديقة الشيبا</h3>
-                    <p>المستوى: <span id="lvl-garden">1</span></p>
-                </div>
+                <div class="building-info"><h3>حديقة الشيبا</h3><p>المستوى: <span id="lvl-garden">1</span></p></div>
                 <button class="upgrade-btn" onclick="upgrade('garden')">ترقية (<span id="cost-garden">1500</span>)</button>
             </div>
         </div>
     </div>
 
-    <!-- الشريط السفلي -->
     <div class="bottom-nav">
         <button class="nav-btn active" id="btn-nav-spin" onclick="switchTab('spin')">🎡 العجلة</button>
         <button class="nav-btn" id="btn-nav-village" onclick="switchTab('village')">🏘️ القرية</button>
     </div>
 
-    <!-- نافذة الهجوم (مخفية افتراضياً) -->
     <div class="modal" id="attack-modal">
         <div class="modal-content">
             <h2>⚔️ لقد حصلت على هجوم!</h2>
             <div style="font-size: 60px; margin: 10px 0;">😈</div>
             <p>لقد وجدت قرية اللاعب <b id="enemy-name">Ali_Pro</b>!</p>
-            <p>هل تريد مهاجمتها وسرقة عملاتها؟</p>
             <button class="attack-btn" onclick="doAttack()">⚔️ اهجم الآن!</button>
             <button class="small" onclick="closeModal()" style="margin-top:10px;">تجاهل (إلغاء)</button>
         </div>
@@ -170,18 +133,20 @@
 
     <script>
         const tg = window.Telegram?.WebApp;
+        const cloud = tg?.CloudStorage;
+        const tgUser = tg?.initDataUnsafe?.user;
+        
         if (tg) { tg.ready(); tg.expand(); }
 
-        // المتغيرات
-        let coins = Number(localStorage.coins ?? 1000);
-        let gems = Number(localStorage.gems ?? 50);
-        let shields = Number(localStorage.shields ?? 0);
-        let points = Number(localStorage.points ?? 0);
+        // المتغيرات (نبدأ من صفر حتى تأتي البيانات من السحابة)
+        let coins = 1000;
+        let gems = 50;
+        let shields = 0;
+        let points = 0;
+        let lastDailyClaim = 0;
         let busy = false;
+        let buildings = {house: {level: 1, cost: 500}, garden: {level: 1, cost: 1500}};
 
-        let buildings = JSON.parse(localStorage.buildings ?? '{"house":{"level":1,"cost":500},"garden":{"level":1,"cost":1500}}');
-
-        // أضفنا الهجوم والدرع للعجلة
         const rewards = [
             {name:"100 عملة", type:"coins", amount:100},
             {name:"سيف (هجوم)", type:"attack", amount:1},
@@ -193,21 +158,86 @@
             {name:"درع (حماية)", type:"shield", amount:1}
         ];
 
-        function save() {
-            localStorage.coins = coins;
-            localStorage.gems = gems;
-            localStorage.shields = shields;
-            localStorage.points = points;
-            localStorage.buildings = JSON.stringify(buildings);
+        // --- نظام الحفظ السحابي (تلغرام) ---
+        function saveData() {
+            const data = {
+                coins: coins, gems: gems, shields: shields, 
+                points: points, buildings: buildings, lastDailyClaim: lastDailyClaim
+            };
+            const dataString = JSON.stringify(data);
+
+            if (cloud) {
+                // الحفظ في سيرفرات تلغرام
+                cloud.setItem("gameData", dataString, (err) => {
+                    if (err) console.error("خطأ في الحفظ:", err);
+                });
+            } else {
+                // احتياطي إذا كان يفتح خارج تلغرام
+                localStorage.setItem("gameData", dataString);
+            }
             render();
         }
 
+        function loadData() {
+            const processData = (dataString) => {
+                if (dataString) {
+                    try {
+                        const data = JSON.parse(dataString);
+                        coins = data.coins ?? 1000;
+                        gems = data.gems ?? 50;
+                        shields = data.shields ?? 0;
+                        points = data.points ?? 0;
+                        buildings = data.buildings ?? buildings;
+                        lastDailyClaim = data.lastDailyClaim ?? 0;
+                    } catch(e) { console.error("خطأ في قراءة البيانات"); }
+                }
+                // تفعيل زر اللعب بعد التحميل
+                document.getElementById("spin").disabled = false;
+                message("هل أنت مستعد للفوز؟");
+                checkDaily();
+                render();
+            };
+
+            if (cloud) {
+                cloud.getItem("gameData", (err, dataString) => {
+                    if (err || !dataString) {
+                        // إذا لم يلعب من قبل، نجرب نجلب من المتصفح (كاحتياطي للانتقال)
+                        processData(localStorage.getItem("gameData"));
+                    } else {
+                        processData(dataString);
+                    }
+                });
+            } else {
+                processData(localStorage.getItem("gameData"));
+            }
+        }
+
+        // --- المكافأة اليومية ---
+        function checkDaily() {
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
+            if (now - lastDailyClaim > oneDay) {
+                document.getElementById("daily-btn").style.display = "block";
+            }
+        }
+
+        function claimDaily() {
+            coins += 1000;
+            gems += 20;
+            shields += 2;
+            lastDailyClaim = Date.now();
+            document.getElementById("daily-btn").style.display = "none";
+            saveData();
+            message("🎁 مبروك! حصلت على 1000 عملة، 20 جوهرة، ودرعين.");
+            if (tg) tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        // --- دوال اللعبة ---
         function render() {
             document.getElementById("coins").textContent = coins;
             document.getElementById("coins-village").textContent = coins;
             document.getElementById("gems").textContent = gems;
             document.getElementById("shields").textContent = shields;
-            
             for (let key in buildings) {
                 document.getElementById("lvl-" + key).textContent = buildings[key].level;
                 document.getElementById("cost-" + key).textContent = buildings[key].cost;
@@ -241,27 +271,17 @@
             const wheel = document.getElementById("wheel");
             
             wheel.style.transform = `rotate(${1800 + (i * 45)}deg)`;
-            
             document.getElementById("spin").disabled = true;
-            save();
+            saveData();
             
             setTimeout(() => {
-                if (r.type === 'coins') {
-                    coins += r.amount;
-                    message("🎉 ربحت " + r.amount + " عملة");
-                } else if (r.type === 'gems') {
-                    gems += r.amount;
-                    message("💎 ربحت " + r.amount + " جواهر");
-                } else if (r.type === 'shield') {
-                    shields += r.amount;
-                    message("🛡️ حصلت على درع! (لديك " + shields + " دروع)");
-                } else if (r.type === 'attack') {
-                    message("⚔️ لقد حصلت على هجوم!");
-                    openAttackModal();
-                }
+                if (r.type === 'coins') { coins += r.amount; message("🎉 ربحت " + r.amount + " عملة"); }
+                else if (r.type === 'gems') { gems += r.amount; message("💎 ربحت " + r.amount + " جواهر"); }
+                else if (r.type === 'shield') { shields += r.amount; message("🛡️ حصلت على درع!"); }
+                else if (r.type === 'attack') { message("⚔️ لقد حصلت على هجوم!"); openAttackModal(); }
                 
                 points += 25;
-                save();
+                saveData();
                 busy = false;
                 document.getElementById("spin").disabled = false;
             }, 4100);
@@ -270,60 +290,32 @@
         function upgrade(buildingKey) {
             let b = buildings[buildingKey];
             if (coins >= b.cost) {
-                coins -= b.cost;
-                b.level += 1;
-                b.cost = Math.floor(b.cost * 1.5); 
-                points += 100;
-                save();
+                coins -= b.cost; b.level += 1; b.cost = Math.floor(b.cost * 1.5); 
+                points += 100; saveData();
                 if (tg) tg.HapticFeedback.notificationOccurred('success');
             } else {
                 alert("ليس لديك عملات كافية!");
             }
         }
 
-        // --- دوال الهجوم ---
-        const enemies = ["Ali_Pro", "ShibaKing", "CryptoBoy", "Sara_Gamer", "Max_Dog"];
-        
+        const enemies = ["Ali_Pro", "ShibaKing", "CryptoBoy", "Sara_Gamer"];
         function openAttackModal() {
-            // اختيار خصم عشوائي
-            const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)];
-            document.getElementById("enemy-name").textContent = randomEnemy;
+            document.getElementById("enemy-name").textContent = enemies[Math.floor(Math.random() * enemies.length)];
             document.getElementById("attack-modal").style.display = "flex";
         }
-
-        function closeModal() {
-            document.getElementById("attack-modal").style.display = "none";
-            message("لقد تجاهلت الهجوم.");
-        }
-
+        function closeModal() { document.getElementById("attack-modal").style.display = "none"; }
         function doAttack() {
             closeModal();
-            // سرقة عملات عشوائية (بين 50 و 300)
             const stolen = Math.floor(Math.random() * 250) + 50;
-            coins += stolen;
-            points += 50;
+            coins += stolen; points += 50; saveData();
             message("⚔️ نجح الهجوم! سرقت " + stolen + " عملة!");
-            save();
             if (tg) tg.HapticFeedback.notificationOccurred('success');
         }
 
-        // دالة بسيطة لمحاكاة هجوم الكلاب الأخرى عليك (تحدث كل فترة)
-        setInterval(() => {
-            if (coins > 500 && Math.random() > 0.7) {
-                if (shields > 0) {
-                    shields--;
-                    message("🛡️ تعرضت لهجوم ولكن الدروع صدته!");
-                } else {
-                    const lost = Math.floor(coins * 0.1); // خسارة 10% من العملات
-                    coins -= lost;
-                    message("💥 تعرضت لهجوم! تمت سرقة " + lost + " عملة.");
-                }
-                save();
-            }
-        }, 45000); // كل 45 ثانية
-
         function message(t) { document.getElementById("message").textContent = t; }
-        render();
+
+        // --- تشغيل اللعبة عند فتحها ---
+        loadData(); // سيتم تحميل البيانات ثم تفعيل زر Spin
     </script>
 </body>
 </html>
