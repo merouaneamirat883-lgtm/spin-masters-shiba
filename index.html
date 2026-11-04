@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spin Masters ShiBa V4</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:linear-gradient(150deg,#080c2b,#28105a,#080c2b);
+ color:white;font-family:Arial;text-align:center;padding:18px;
+}
+header{font-size:27px;font-weight:bold;color:#ffcf35;margin:15px}
+.card{
+ background:#171c42;border:1px solid #7653cb;
+ border-radius:20px;padding:18px;margin:14px auto;
+ max-width:440px;
+}
+.stats{display:flex;justify-content:space-around;gap:10px}
+.stat{background:#292653;padding:12px;border-radius:12px;flex:1}
+.dog{font-size:65px;margin:8px}
+.wheel{
+ width:260px;height:260px;max-width:75vw;
+ aspect-ratio:1;border-radius:50%;
+ margin:20px auto;
+ border:9px solid #ffd34e;
+ background:conic-gradient(
+ #ffcf36 0 45deg,#a52cff 45deg 90deg,
+ #23c9a2 90deg 135deg,#ff4b85 135deg 180deg,
+ #ffcf36 180deg 225deg,#a52cff 225deg 270deg,
+ #23c9a2 270deg 315deg,#ff4b85 315deg 360deg);
+ box-shadow:0 0 30px #a64bff;
+ display:flex;align-items:center;justify-content:center;
+ font-size:55px;transition:transform 3s cubic-bezier(.15,.7,.1,1);
+}
+button{
+ border:0;border-radius:14px;padding:15px;
+ margin:6px;background:linear-gradient(90deg,#ffbd22,#ff7a00);
+ color:#241039;font-size:18px;font-weight:bold;width:100%;
+}
+button:disabled{opacity:.5}
+.small{background:#37305e;color:white}
+#message{color:#ffdc5b;font-size:20px;min-height:30px}
+</style>
+</head>
+<body>
+<header>👑 SPIN MASTERS SHIBA V4</header>
+
+<div class="card">
+ <div class="dog">🐕</div>
+ <h2>مرحباً بك في عالم Shiba</h2>
+ <div class="stats">
+  <div class="stat">🪙 العملات<br><b id="coins">1000</b></div>
+  <div class="stat">💎 الجواهر<br><b id="gems">50</b></div>
+  <div class="stat">⭐ المستوى<br><b id="level">1</b></div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>🎡 عجلة الحظ</h2>
+ <div class="wheel" id="wheel">🐾</div>
+ <div id="message">هل أنت مستعد للفوز؟</div>
+ <button id="spin" onclick="spin()">🎯 ابدأ الدوران</button>
+ <p>تكلفة الجولة: 10 عملات افتراضية</p>
+</div>
+
+<div class="card">
+ <h2>🎁 صندوق الكنوز</h2>
+ <div style="font-size:55px">💎🎁💰</div>
+ <button class="small" onclick="openBox()">افتح صندوقاً (100 عملة)</button>
+</div>
+
+<div class="card">
+ <h2>🏆 حساب اللاعب</h2>
+ <p>النقاط: <b id="points">0</b></p>
+ <button class="small" onclick="showProfile()">ملفي الشخصي</button>
+ <button class="small" onclick="resetGame()">إعادة ضبط التجربة</button>
+</div>
+
+<script>
+const tg=window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();}
+
+let coins=Number(localStorage.coins??1000);
+let gems=Number(localStorage.gems??50);
+let points=Number(localStorage.points??0);
+let busy=false;
+
+const rewards=[
+ {name:"100 عملة",coins:100},
+ {name:"50 عملة",coins:50},
+ {name:"10 جواهر",gems:10},
+ {name:"200 عملة",coins:200},
+ {name:"5 جواهر",gems:5},
+ {name:"75 عملة",coins:75},
+ {name:"300 عملة",coins:300},
+ {name:"20 جواهر",gems:20}
+];
+
+function save(){
+ localStorage.coins=coins;
+ localStorage.gems=gems;
+ localStorage.points=points;
+ render();
+}
+function render(){
+ document.getElementById("coins").textContent=coins;
+ document.getElementById("gems").textContent=gems;
+ document.getElementById("points").textContent=points;
+ document.getElementById("level").textContent=1+Math.floor(points/500);
+}
+function spin(){
+ if(busy)return;
+ if(coins<10){
+  message("ليس لديك عملات كافية!");
+  return;
+ }
+ busy=true;
+ coins-=10;
+ const i=Math.floor(Math.random()*rewards.length);
+ const r=rewards[i];
+ const wheel=document.getElementById("wheel");
+ wheel.style.transform="rotate("+(1800+i*45)+"deg)";
+ document.getElementById("spin").disabled=true;
+ save();
+ setTimeout(()=>{
+  coins+=r.coins||0;
+  gems+=r.gems||0;
+  points+=25;
+  message("🎉 ربحت "+r.name);
+  save();
+  busy=false;
+  document.getElementById("spin").disabled=false;
+ },3100);
+}
+function openBox(){
+ if(coins<100){message("تحتاج إلى 100 عملة!");return;}
+ coins-=100;
+ const prize=50+Math.floor(Math.random()*251);
+ coins+=prize;
+ points+=20;
+ message("🎁 حصلت على "+prize+" عملة!");
+ save();
+}
+function message(t){
+ document.getElementById("message").textContent=t;
+}
+function showProfile(){
+ message("⭐ مستواك: "+(1+Math.floor(points/500))+" | نقاطك: "+points);
+}
+function resetGame(){
+ coins=1000;gems=50;points=0;save();
+ message("تمت إعادة التجربة");
+}
+render();
+</script>
+</body>
+</html>
