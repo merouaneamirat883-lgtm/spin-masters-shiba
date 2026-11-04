@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spin Masters - Shiba</title>
+    <title>Spin Masters - Pro Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
 
@@ -19,70 +19,58 @@
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            background-color: #0d1117; /* لون احتياطي */
         }
 
-        /* الشريط العلوي (مستوى، عملات) */
+        /* تأثير اهتزاز الشاشة */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake { animation: shake 0.5s; animation-iteration-count: 1; }
+
+        /* الطبقة البصرية لمطر العملات */
+        #coin-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* الشريط العلوي */
         .top-bar {
             width: 100%;
-            padding: 10px 15px;
+            padding: 15px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
             z-index: 10;
         }
 
-        .player-info {
+        .ui-box {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #FFD700;
+            border-radius: 20px;
+            padding: 5px 15px;
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 5px 15px 5px 5px;
-            border-radius: 30px;
-            border: 2px solid #FFD700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
 
-        .avatar {
-            width: 40px; height: 40px;
-            background: #8e44ad;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 20px;
-        }
+        .ui-box img { width: 30px; height: 30px; }
+        .ui-text { color: #FFD700; font-weight: 900; font-size: 20px; }
 
-        .level-bar {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .level-text { color: white; font-size: 12px; font-weight: bold; }
-        .progress-bg {
-            width: 80px; height: 8px;
-            background: #333; border-radius: 5px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            width: 60%; height: 100%;
-            background: #2ed573;
-        }
-
-        .currency {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 5px 15px;
-            border-radius: 30px;
-            border: 2px solid #FFD700;
-            color: #FFD700;
-            font-weight: 900;
-            font-size: 18px;
-        }
-
-        .currency img { width: 25px; height: 25px; }
-
-        /* منطقة الماكينة */
+        /* الماكينة */
         .game-area {
             flex: 1;
             display: flex;
@@ -90,43 +78,64 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            z-index: 5;
         }
 
-        .machine-frame {
-            background: linear-gradient(180deg, #4a4a4a, #1a1a1a);
-            padding: 15px;
-            border-radius: 20px;
-            border: 4px solid #FFD700;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(255, 215, 0, 0.4);
+        .machine {
+            background: linear-gradient(145deg, #2b2b2b, #111);
+            padding: 20px;
+            border-radius: 30px;
+            border: 6px solid #FFD700;
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.9), 
+                inset 0 0 30px rgba(255,215,0,0.4),
+                0 0 20px rgba(255,215,0,0.6);
+            display: flex;
+            gap: 10px;
             position: relative;
-            display: flex;
-            gap: 5px;
         }
 
-        /* الشاشة الزجاجية للماكينة */
-        .reels-container {
-            background: #fff;
-            border-radius: 10px;
-            padding: 5px;
+        /* إضاءة الماكينة */
+        .machine::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border-radius: 35px;
+            background: linear-gradient(45deg, #FFD700, transparent, #FFD700);
+            z-index: -1;
+            animation: glow 2s linear infinite;
+        }
+        @keyframes glow {
+            0% { opacity: 0.5; filter: blur(5px); }
+            50% { opacity: 1; filter: blur(15px); }
+            100% { opacity: 0.5; filter: blur(5px); }
+        }
+
+        .reels-display {
+            background: #000;
+            padding: 10px;
+            border-radius: 15px;
             display: flex;
-            gap: 5px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            gap: 10px;
+            border: 3px solid #444;
+            box-shadow: inset 0 0 20px #000;
             overflow: hidden;
             position: relative;
         }
 
         .reel {
             width: 80px; height: 240px;
-            background: #f1f2f6;
+            background: #fff;
+            border-radius: 10px;
             overflow: hidden;
             position: relative;
-            border-radius: 5px;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.6), inset 0 -10px 20px rgba(0,0,0,0.6);
         }
 
         .reel-strip {
             display: flex;
             flex-direction: column;
-            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
+            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
         }
 
         .reel-strip img {
@@ -134,158 +143,103 @@
             object-fit: contain;
             padding: 10px;
             background: #fff;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #eee;
         }
 
         .win-line {
             position: absolute;
-            top: 50%;
-            left: 0; width: 100%;
-            height: 4px;
-            background: rgba(255, 0, 0, 0.5);
-            box-shadow: 0 0 10px red;
+            top: 50%; left: 0; width: 100%; height: 6px;
+            background: rgba(255, 0, 0, 0.8);
+            box-shadow: 0 0 15px red;
             transform: translateY(-50%);
-            z-index: 5;
-            pointer-events: none;
+            z-index: 10;
         }
 
-        /* زر اللعب واللفات */
-        .bottom-controls {
-            position: absolute;
-            bottom: 80px;
+        /* الأزرار */
+        .controls {
+            margin-top: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
-            width: 100%;
+            gap: 15px;
+            z-index: 10;
         }
-
-        .spins-counter {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            border: 2px solid #fff;
-            font-weight: bold;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .spins-counter span { color: #2ed573; font-size: 22px; }
 
         .spin-btn {
-            background: linear-gradient(180deg, #2ed573, #1e90ff);
+            background: linear-gradient(180deg, #ff4757, #c0392b);
             color: white;
-            border: 3px solid #fff;
-            padding: 10px 60px;
-            font-size: 28px;
+            border: 4px solid #fff;
+            padding: 15px 80px;
+            font-size: 30px;
             font-family: 'Cairo', sans-serif;
             font-weight: 900;
-            border-radius: 40px;
+            border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 8px 0 #2f3542, 0 15px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 0 #7f1a15, 0 15px 30px rgba(0,0,0,0.8);
             transition: all 0.1s;
-            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
-
+        
         .spin-btn:active:not(:disabled) {
-            transform: translateY(8px);
-            box-shadow: 0 0 0 #2f3542, 0 5px 10px rgba(0,0,0,0.6);
+            transform: translateY(10px);
+            box-shadow: 0 0 0 #7f1a15, 0 5px 10px rgba(0,0,0,0.8);
         }
 
         .spin-btn:disabled {
-            background: #747d8c;
-            box-shadow: 0 8px 0 #2f3542;
+            background: #555;
+            box-shadow: 0 10px 0 #222;
+            cursor: not-allowed;
+            color: #888;
         }
-
-        /* القائمة السفلية */
-        .bottom-nav {
-            height: 70px;
-            background: rgba(0, 0, 0, 0.9);
-            border-top: 2px solid #FFD700;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            width: 100%;
-            position: absolute;
-            bottom: 0;
-        }
-
-        .nav-item {
-            color: #aaa;
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            font-weight: bold;
-        }
-        .nav-item.active { color: #FFD700; }
-        .nav-item .icon { font-size: 24px; }
 
         /* نافذة الفوز */
         .win-modal {
-            position: fixed;
-            top: 50%; left: 50%;
+            position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0);
             background: radial-gradient(circle, #2b2b2b, #000);
-            padding: 30px;
-            border-radius: 20px;
-            border: 3px solid #FFD700;
+            padding: 40px 20px;
+            border-radius: 30px;
+            border: 4px solid #FFD700;
             text-align: center;
             color: white;
-            z-index: 100;
-            transition: transform 0.3s;
-            box-shadow: 0 0 50px #FFD700;
-            width: 80%;
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 80px #FFD700;
+            width: 85%;
         }
 
         .win-modal.show { transform: translate(-50%, -50%) scale(1); }
-        .win-modal h2 { margin-bottom: 10px; color: #FFD700; text-shadow: 0 0 10px #FFD700; }
-        .win-modal img { width: 80px; height: 80px; margin: 10px; animation: bounce 1s infinite alternate;}
-        .win-modal p { font-size: 22px; font-weight: bold; }
+        .win-modal h2 { font-size: 36px; color: #FFD700; margin-bottom: 15px; text-shadow: 0 0 20px #FFD700; }
+        .win-modal img { width: 120px; height: 120px; margin: 10px; animation: bounce 0.8s infinite alternate; }
+        .win-modal p { font-size: 26px; font-weight: bold; color: #fff; }
 
         @keyframes bounce {
             from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
-        }
-
-        /* زر إعادة تعبئة اللفات (للتجربة فقط) */
-        .reload-btn {
-            margin-top: 10px;
-            background: transparent;
-            color: #aaa;
-            border: 1px solid #aaa;
-            padding: 5px 15px;
-            border-radius: 10px;
-            font-size: 12px;
-            cursor: pointer;
+            to { transform: translateY(-15px); }
         }
     </style>
 </head>
 <body>
 
+    <!-- كانفاس لمطر العملات -->
+    <canvas id="coin-canvas"></canvas>
+
     <!-- الشريط العلوي -->
     <div class="top-bar">
-        <div class="player-info">
-            <div class="avatar">🐕</div>
-            <div class="level-bar">
-                <div class="level-text">المستوى 1</div>
-                <div class="progress-bg"><div class="progress-fill"></div></div>
-            </div>
+        <div class="ui-box">
+            <span style="font-size: 24px;">👑</span>
+            <div class="ui-text">المستوى 1</div>
         </div>
-        <div class="currency">
+        <div class="ui-box">
             <img src="coin.png" alt="coin">
-            <span id="ui-coins">0</span>
+            <div class="ui-text" id="ui-coins">1000</div>
         </div>
     </div>
 
-    <!-- منطقة اللعب -->
+    <!-- الماكينة -->
     <div class="game-area">
-        <div class="machine-frame">
-            <div class="reels-container">
+        <div class="machine" id="machine">
+            <div class="reels-display">
                 <div class="reel"><div class="reel-strip" id="reel1"></div></div>
                 <div class="reel"><div class="reel-strip" id="reel2"></div></div>
                 <div class="reel"><div class="reel-strip" id="reel3"></div></div>
@@ -293,55 +247,71 @@
             </div>
         </div>
 
-        <div class="bottom-controls">
-            <div class="spins-counter">اللفات: <span id="ui-spins">10</span></div>
+        <div class="controls">
+            <div style="color: white; font-weight: bold; font-size: 20px; text-shadow: 1px 1px 3px #000;">
+                اللفات المتبقية: <span id="ui-spins" style="color: #2ed573;">10</span>
+            </div>
             <button class="spin-btn" id="spinBtn">SPIN</button>
-            <button class="reload-btn" onclick="location.reload()">(للتجربة) إعادة تعبئة اللفات</button>
         </div>
-    </div>
-
-    <!-- القائمة السفلية -->
-    <div class="bottom-nav">
-        <div class="nav-item"><span class="icon">🏠</span> القرية</div>
-        <div class="nav-item active"><span class="icon">🎰</span> الماكينة</div>
-        <div class="nav-item"><span class="icon">🃏</span> البطاقات</div>
     </div>
 
     <!-- نافذة الفوز -->
     <div class="win-modal" id="winModal">
-        <h2 id="winTitle">مبروك!</h2>
+        <h2 id="winTitle">JACKPOT!</h2>
         <img id="winImg" src="coin.png" alt="Reward">
-        <p>ربحت <span id="winAmount">0</span></p>
+        <p>ربحت <span id="winAmount">0</span> عملة!</p>
     </div>
 
     <script>
+        // --- الأصوات (Web Audio API) ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (type === 'spin') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'win') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            }
+        }
+
         // --- إعدادات اللعبة ---
         const symbols = ['coin.png', 'diamond.png', 'shield.png'];
-        let state = {
-            coins: 500,
-            spins: 10,
-            isSpinning: false
-        };
+        let state = { coins: 1000, spins: 10, isSpinning: false };
 
-        // عناصر الواجهة
         const uiCoins = document.getElementById('ui-coins');
         const uiSpins = document.getElementById('ui-spins');
         const spinBtn = document.getElementById('spinBtn');
         const winModal = document.getElementById('winModal');
+        const machine = document.getElementById('machine');
 
-        // تحديث الواجهة
         function updateUI() {
             uiCoins.innerText = state.coins;
             uiSpins.innerText = state.spins;
             spinBtn.disabled = state.spins <= 0 || state.isSpinning;
         }
 
-        // ملء البكرات بالصور
         function populateReels() {
             for (let i = 1; i <= 3; i++) {
                 const reel = document.getElementById(`reel${i}`);
                 let html = '';
-                // نضع 20 صورة عشوائية في كل بكرة
                 for (let j = 0; j < 20; j++) {
                     const randSym = symbols[Math.floor(Math.random() * symbols.length)];
                     html += `<img src="${randSym}">`;
@@ -350,7 +320,6 @@
             }
         }
 
-        // دالة اللف
         function spin() {
             if (state.isSpinning || state.spins <= 0) return;
 
@@ -359,33 +328,29 @@
             updateUI();
             winModal.classList.remove('show');
             populateReels();
+            playSound('spin');
 
-            const imageHeight = 80; // ارتفاع الصورة في CSS
+            const imageHeight = 80;
 
-            // دالة تحريك بكرة معينة
             function animateReel(id, duration, targetIndex) {
                 const reel = document.getElementById(id);
                 reel.style.transition = 'none';
                 reel.style.transform = 'translateY(0px)';
-                void reel.offsetWidth; // Trigger reflow
+                void reel.offsetWidth;
 
-                // المسافة: 15 صورة للأسفل + موقع الصورة النهائية
                 const moveDistance = (imageHeight * 15) + (targetIndex * imageHeight);
                 reel.style.transition = `transform ${duration}s cubic-bezier(0.1, 0.7, 0.1, 1)`;
                 reel.style.transform = `translateY(-${moveDistance}px)`;
             }
 
-            // تحديد النتائج (عشوائية)
             const res1 = Math.floor(Math.random() * 3);
             const res2 = Math.floor(Math.random() * 3);
             const res3 = Math.floor(Math.random() * 3);
 
-            // تحريك البكرات بأوقات مختلفة
             animateReel('reel1', 2.5, res1);
             animateReel('reel2', 3.0, res2);
             animateReel('reel3', 3.5, res3);
 
-            // بعد انتهاء الحركة
             setTimeout(() => {
                 state.isSpinning = false;
                 updateUI();
@@ -393,71 +358,91 @@
             }, 3800);
         }
 
-        // حساب الجوائز
         function checkWin(r1, r2, r3) {
-            let wonType = '';
             let amount = 0;
-            let img = '';
+            let isJackpot = false;
 
-            // إذا تطابقت الثلاثة (Jackpot)
             if (r1 === r2 && r2 === r3) {
-                if (r1 === 0) { // Coin
-                    amount = 150;
-                    state.coins += amount;
-                    img = 'coin.png';
-                    wonType = 'عملات';
-                } else if (r1 === 1) { // Diamond
-                    amount = 50;
-                    state.coins += amount; // نحوّل الجوهرة لعملات للتبسيط
-                    img = 'diamond.png';
-                    wonType = 'جواهر (تحولت لعملات)';
-                } else { // Shield
-                    amount = 30;
-                    state.coins += amount;
-                    img = 'shield.png';
-                    wonType = 'دروع (تحولت لعملات)';
-                }
-                showModal(amount, img, "JACKPOT! 🎉");
-            } 
-            // إذا تطابق اثنان (فوز صغير)
-            else if (r1 === r2 || r2 === r3 || r1 === r3) {
-                amount = 20;
-                state.coins += amount;
-                img = 'coin.png';
-                showModal(amount, img, "فوز صغير!");
-            } 
-            // خسارة
-            else {
-                amount = 5; // تعويض بسيط
-                state.coins += amount;
-                img = 'coin.png';
-                showModal(amount, img, "حظ أوفر!");
+                amount = 500; // جاكبوت
+                isJackpot = true;
+                playSound('win');
+                machine.classList.add('shake');
+                setTimeout(() => machine.classList.remove('shake'), 500);
+                createCoinRain();
+                showModal(amount, "JACKPOT! 🎉");
+            } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+                amount = 50; // فوز صغير
+                playSound('win');
+                showModal(amount, "فوز رائع!");
+            } else {
+                amount = 10; // تعويض
+                showModal(amount, "حظ أوفر!");
             }
             
+            state.coins += amount;
             updateUI();
         }
 
-        function showModal(amount, img, title) {
+        function showModal(amount, title) {
             document.getElementById('winTitle').innerText = title;
             document.getElementById('winAmount').innerText = amount;
-            document.getElementById('winImg').src = img;
             winModal.classList.add('show');
-
-            setTimeout(() => {
-                winModal.classList.remove('show');
-            }, 2500);
+            setTimeout(() => winModal.classList.remove('show'), 3000);
         }
 
-        // بدء اللعبة
+        // --- تأثير مطر العملات (Canvas) ---
+        const canvas = document.getElementById('coin-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createCoinRain() {
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: -50 - Math.random() * 100,
+                    size: 30 + Math.random() * 20,
+                    speedY: 3 + Math.random() * 5,
+                    speedX: -2 + Math.random() * 4,
+                    rotation: Math.random() * Math.PI,
+                    rotSpeed: -0.1 + Math.random() * 0.2
+                });
+            }
+        }
+
+        const coinImg = new Image();
+        coinImg.src = 'coin.png';
+
+        function updateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.y += p.speedY;
+                p.x += p.speedX;
+                p.rotation += p.rotSpeed;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation);
+                ctx.drawImage(coinImg, -p.size/2, -p.size/2, p.size, p.size);
+                ctx.restore();
+
+                if (p.y > canvas.height + 50) particles.splice(i, 1);
+            }
+            requestAnimationFrame(updateParticles);
+        }
+        updateParticles();
+
+        // تشغيل اللعبة
         populateReels();
         updateUI();
         spinBtn.addEventListener('click', spin);
-
-        // ربط تليجرام
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-        }
     </script>
 </body>
 </html>
